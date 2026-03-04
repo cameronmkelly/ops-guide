@@ -6,30 +6,40 @@
 <title>Facility Calculators — [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../style.css">
 <style>
-.calc-tabs { display:flex; gap:0; margin-bottom:0; border-bottom:2px solid var(--dawn-hl-med); }
-.calc-tab { padding:10px 22px; border:none; background:none; font-family:var(--font-heading); font-size:0.88rem; font-weight:600; color:var(--dawn-muted); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.15s; }
-.calc-tab:hover { color:var(--dawn-subtle); }
-.calc-tab.active { color:var(--lyt-teal); border-bottom-color:var(--lyt-teal); }
-.calc-panel { display:none; padding-top:24px; }
+/* ── Calc tabs — two fixed rows ── */
+.page-content { padding-left:24px !important; padding-right:24px !important; }
+.calc-tabs { display:grid; grid-template-columns:repeat(6, 1fr); grid-template-rows:auto auto; gap:0; margin-bottom:0; border-bottom:2px solid var(--dawn-hl-med); }
+.calc-tab:nth-child(1) { grid-column:span 3; }
+.calc-tab:nth-child(2) { grid-column:span 3; }
+.calc-tab:nth-child(3) { grid-column:span 2; }
+.calc-tab:nth-child(4) { grid-column:span 2; }
+.calc-tab:nth-child(5) { grid-column:span 2; }
+.calc-tab { padding:8px 14px; border:1px solid transparent; border-bottom:none; background:var(--dawn-overlay); font-family:var(--font-sans); font-size:0.78rem; font-weight:500; color:var(--dawn-subtle); cursor:pointer; transition:all 0.12s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:-2px; border-radius:6px 6px 0 0; text-align:center; }
+.calc-tab:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
+.calc-tab.active { background:var(--dawn-surface); color:var(--lyt-teal); font-weight:700; border-color:var(--dawn-hl-med); border-bottom:2px solid var(--dawn-surface); }
+.calc-panel { display:none; }
 .calc-panel.active { display:block; }
 
-.calc-card { background:var(--dawn-surface); border:1px solid var(--dawn-hl-med); border-radius:10px; padding:24px 28px; margin-bottom:24px; }
+/* ── Calc card ── */
+.calc-card { background:var(--dawn-surface); border:1px solid var(--dawn-hl-med); border-radius:10px; padding:20px 24px; margin-bottom:24px; }
 .calc-card h3 { margin:0 0 4px; font-size:1.05rem; color:var(--dawn-text); font-weight:700; }
 .calc-desc { font-size:0.86rem; color:var(--dawn-muted); margin-bottom:18px; }
 
-.field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; margin-bottom:16px; }
-.field-row.three { grid-template-columns:1fr 1fr 1fr; }
+/* ── Input fields — grid layout, consistent heights ── */
+.field-row { display:grid; grid-template-columns:repeat(auto-fill, 180px); gap:14px 24px; margin-bottom:16px; }
+.field-row.three { grid-template-columns:repeat(auto-fill, 160px); }
 .field-group { display:flex; flex-direction:column; gap:5px; }
+.field-group.wide { grid-column:span 2; }
 .field-group label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--dawn-subtle); }
-.field-group input, .field-group select { padding:9px 40px 9px 12px; border:1.5px solid var(--dawn-hl-med); border-radius:6px; font-size:0.92rem; background:white; color:var(--dawn-text); font-family:var(--font-body); transition:border-color 0.15s; }
+.field-group input, .field-group select { padding:9px 40px 9px 12px; border:1.5px solid var(--dawn-hl-med); border-radius:6px; font-size:0.92rem; background:white; color:var(--dawn-text); font-family:var(--font-body); transition:border-color 0.15s; width:100%; }
 /* Always-visible bigger spinners */
 .field-group input[type=number] { -moz-appearance:textfield; appearance:textfield; position:relative; }
 .num-wrap { position:relative; display:flex; }
 .num-wrap input[type=number] { width:100%; padding-right:32px; -moz-appearance:textfield; }
 .num-wrap input[type=number]::-webkit-inner-spin-button,
 .num-wrap input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
-.num-spinner { position:absolute; right:0; top:0; bottom:0; width:30px; display:flex; flex-direction:column; border-left:1.5px solid var(--dawn-hl-med); overflow:hidden; border-radius:0 6px 6px 0; }
-.num-spinner button { flex:1; background:white; border:none; cursor:pointer; font-size:0.65rem; color:var(--dawn-subtle); line-height:1; transition:background 0.1s; padding:0; }
+.num-spinner { position:absolute; right:0; top:0; bottom:0; width:36px; display:flex; flex-direction:column; border-left:1.5px solid var(--dawn-hl-med); overflow:hidden; border-radius:0 6px 6px 0; }
+.num-spinner button { flex:1; background:white; border:none; cursor:pointer; font-size:0.7rem; color:var(--dawn-subtle); line-height:1; transition:background 0.1s; padding:0; min-height:22px; touch-action:manipulation; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
 .num-spinner button:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
 .num-spinner button:active { background:var(--dawn-hl-med); }
 .field-group input:focus, .field-group select:focus { outline:none; border-color:var(--lyt-teal); box-shadow:0 0 0 3px rgba(26,125,164,0.1); }
@@ -64,10 +74,32 @@
 .instructions { background:rgba(40,105,131,0.06); border:1px solid rgba(40,105,131,0.2); border-radius:6px; padding:12px 16px; font-size:0.83rem; color:var(--dawn-subtle); line-height:1.7; margin-bottom:16px; }
 .instructions strong { color:var(--dawn-pine); }
 
-.unit-pair { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; }
+.unit-pair { display:grid; grid-template-columns:repeat(auto-fill, 180px); gap:14px 24px; }
 .unit-pair .field-group input { padding:9px 32px 9px 12px; }
 
-.dosing-ref-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin:8px 0 0; border-radius:6px; overflow:hidden; }
+/* ── Calc inputs: groups side-by-side on wide, stacked on narrow ── */
+.calc-input-stack { display:flex; flex-direction:column; margin-bottom:8px; }
+.calc-input-row { display:flex; flex-wrap:wrap; gap:8px; }
+.calc-input-row .input-with-unit { width:150px; }
+
+/* ── Input with embedded unit label ── */
+.input-group { display:flex; flex-direction:column; gap:5px; }
+.input-group-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--dawn-subtle); }
+.input-with-unit { position:relative; display:flex; align-items:center; }
+.input-with-unit input { width:100%; padding:9px 58px 9px 12px; border:1.5px solid var(--dawn-hl-med); border-radius:6px; font-size:0.92rem; background:white; color:var(--dawn-text); -moz-appearance:textfield; appearance:textfield; }
+.input-with-unit input::-webkit-inner-spin-button,
+.input-with-unit input::-webkit-outer-spin-button { -webkit-appearance:none; }
+.input-with-unit input:focus { outline:none; border-color:var(--lyt-teal); box-shadow:0 0 0 3px rgba(26,125,164,0.1); }
+.input-unit-label { position:absolute; right:36px; font-size:0.68rem; font-weight:600; color:var(--dawn-muted); letter-spacing:0.02em; text-transform:uppercase; pointer-events:none; white-space:nowrap; max-width:44px; overflow:hidden; text-overflow:clip; }
+.input-with-unit .num-spinner { position:absolute; right:0; top:0; bottom:0; width:32px; display:flex; flex-direction:column; border-left:1.5px solid var(--dawn-hl-med); overflow:hidden; border-radius:0 6px 6px 0; }
+.input-with-unit .num-spinner button { flex:1; background:white; border:none; cursor:pointer; font-size:0.65rem; color:var(--dawn-subtle); line-height:1; transition:background 0.1s; padding:0; min-height:20px; touch-action:manipulation; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+.input-with-unit .num-spinner button:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
+.input-with-unit .num-spinner button:active { background:var(--dawn-hl-med); }
+.input-row-note { font-weight:400; text-transform:none; letter-spacing:0; color:var(--dawn-muted); font-size:0.65rem; }
+.input-row-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:var(--dawn-muted); margin-bottom:6px; }
+
+.dosing-ref-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:6px; }
+.dosing-ref-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin:8px 0 0; min-width:480px; }
 .dosing-ref-table th { background:var(--dawn-overlay); text-align:left; font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--dawn-subtle); padding:7px 14px; border-bottom:1px solid var(--dawn-hl-med); }
 .dosing-ref-table td { padding:8px 14px; border-bottom:1px solid var(--dawn-hl-low); vertical-align:top; color:var(--dawn-text); }
 .dosing-ref-table tr:last-child td { border-bottom:none; }
@@ -77,7 +109,12 @@
 </style>
 </head>
 <body>
-<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">◀</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
+<div class="mobile-header">
+  <span class="mobile-header-title">Operations Guide</span>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+</div>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">☰</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
 <div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links">
 <a href="../administrative/index.html" class="nav-link">Administrative Index</a>
 <a href="../administrative/product-receiving.html" class="nav-sub">Product & Material Receiving</a>
@@ -140,10 +177,10 @@
 
         <div class="calc-tabs">
       <button class="calc-tab active" onclick="showCalc('dilution',this)">Chemical Dilution</button>
-      <button class="calc-tab" onclick="showCalc('ibc',this)">IBC Totes</button>
-      <button class="calc-tab" onclick="showCalc('process',this)">Processing Tanks</button>
-      <button class="calc-tab" onclick="showCalc('small',this)">Small Tanks</button>
-      <button class="calc-tab" onclick="showCalc('flow',this)">Flow Rate</button>
+      <button class="calc-tab" onclick="showCalc('flow',this)">Flow Rate Calculator</button>
+      <button class="calc-tab" onclick="showCalc('ibc',this)">IBC Tote Volumes</button>
+      <button class="calc-tab" onclick="showCalc('process',this)">Processing Tank Volumes</button>
+      <button class="calc-tab" onclick="showCalc('small',this)">Small Tank Volumes</button>
     </div>
 
     <!-- ═══ DILUTION ═══ -->
@@ -165,29 +202,29 @@
         <div class="preset-section">
           <div class="preset-section-label">2 — Select chemical preset</div>
           <div class="preset-group" id="chem-presets">
-            <button class="preset" data-pct="0.5">PBW low 0.5%</button>
-            <button class="preset" data-pct="1.3">PBW standard 1.3%</button>
-            <button class="preset" data-pct="3.0">PBW heavy 3.0%</button>
-            <button class="preset" data-pct="1.5">Citric copper 1.5%</button>
-            <button class="preset" data-pct="2.5">Citric SS 2.5%</button>
-            <button class="preset" data-pct="0.5">FB400 low 0.5%</button>
-            <button class="preset" data-pct="1.0">FB400 std 1.0%</button>
-            <button class="preset" data-pct="1.5">FB400 high 1.5%</button>
+            <button class="preset" data-pct="0.5">Detergent Low 0.5%</button>
+            <button class="preset" data-pct="1.3">Detergent Standard 1.3%</button>
+            <button class="preset" data-pct="3.0">Detergent Heavy 3.0%</button>
+            <button class="preset" data-pct="1.5">Citric Acid (Copper) 1.5%</button>
+            <button class="preset" data-pct="2.0">Citric Acid (SS) Low 2.0%</button>
+            <button class="preset" data-pct="3.0">Citric Acid (SS) High 3.0%</button>
+            <button class="preset" data-pct="4.0">Citric Acid Passivation 4.0%</button>
           </div>
         </div>
-        <div class="field-row">
-          <div class="field-group"><label>Working Volume (gallons)</label>
-            <div class="num-wrap"><input type="number" id="d-vol" placeholder="e.g. 90" min="0" step="1"><div class="num-spinner"><button data-id="d-vol" data-step="1" data-dec="0" data-dir="1">▲</button><button data-id="d-vol" data-step="1" data-dec="0" data-dir="-1">▼</button></div></div>
-            <span class="field-hint">Enter manually or select vessel above</span>
+        <div class="calc-input-stack">
+          <div class="input-row-label">Concentration</div>
+          <div class="calc-input-row" style="margin-bottom:14px;">
+            <div class="input-with-unit"><input type="number" id="d-pct" placeholder="0.0" min="0" step="0.1" max="100"><span class="input-unit-label">% wt</span><div class="num-spinner"><button data-id="d-pct" data-step="0.1" data-dec="1" data-dir="1">▲</button><button data-id="d-pct" data-step="0.1" data-dec="1" data-dir="-1">▼</button></div></div>
           </div>
-          <div class="field-group"><label>Target Concentration (% by weight)</label>
-            <div class="num-wrap"><input type="number" id="d-pct" placeholder="e.g. 1.3" min="0" max="100" step="0.1"><div class="num-spinner"><button data-id="d-pct" data-step="0.1" data-dec="1" data-dir="1">▲</button><button data-id="d-pct" data-step="0.1" data-dec="1" data-dir="-1">▼</button></div></div>
+          <div class="input-row-label">Working Volume</div>
+          <div class="calc-input-row" style="margin-bottom:14px;">
+            <div class="input-with-unit"><input type="number" id="d-vol" placeholder="0.00" min="0" step="0.1"><span class="input-unit-label">gal</span><div class="num-spinner"><button data-id="d-vol" data-step="0.1" data-dec="2" data-dir="1">▲</button><button data-id="d-vol" data-step="0.1" data-dec="2" data-dir="-1">▼</button></div></div>
+            <div class="input-with-unit"><input type="number" id="d-vol-L" placeholder="0.000" min="0" step="0.100"><span class="input-unit-label">L</span><div class="num-spinner"><button data-id="d-vol-L" data-step="0.100" data-dec="3" data-dir="1">▲</button><button data-id="d-vol-L" data-step="0.100" data-dec="3" data-dir="-1">▼</button></div></div>
           </div>
-          <div class="field-group"><label>Chemical Package Size (kg) — optional</label>
-            <div class="num-wrap"><input type="number" id="d-ckg" placeholder="e.g. 22.5" min="0" step="0.5"><div class="num-spinner"><button data-id="d-ckg" data-step="0.5" data-dec="1" data-dir="1">▲</button><button data-id="d-ckg" data-step="0.5" data-dec="1" data-dir="-1">▼</button></div></div>
-          </div>
-          <div class="field-group"><label>Chemical Package Size (lbs) — optional</label>
-            <div class="num-wrap"><input type="number" id="d-clb" placeholder="e.g. 50" min="0" step="0.5"><div class="num-spinner"><button data-id="d-clb" data-step="0.5" data-dec="1" data-dir="1">▲</button><button data-id="d-clb" data-step="0.5" data-dec="1" data-dir="-1">▼</button></div></div>
+          <div class="input-row-label">Package Size <span class="input-row-note">— optional</span></div>
+          <div class="calc-input-row" style="margin-bottom:16px;">
+            <div class="input-with-unit"><input type="number" id="d-ckg" placeholder="0.0" min="0" step="0.5"><span class="input-unit-label">kg</span><div class="num-spinner"><button data-id="d-ckg" data-step="0.5" data-dec="1" data-dir="1">▲</button><button data-id="d-ckg" data-step="0.5" data-dec="1" data-dir="-1">▼</button></div></div>
+            <div class="input-with-unit"><input type="number" id="d-clb" placeholder="0.0" min="0" step="0.5"><span class="input-unit-label">lbs</span><div class="num-spinner"><button data-id="d-clb" data-step="0.5" data-dec="1" data-dir="1">▲</button><button data-id="d-clb" data-step="0.5" data-dec="1" data-dir="-1">▼</button></div></div>
           </div>
         </div>
         <div class="result-box">
@@ -204,7 +241,7 @@
       </div>
       <div class="callout callout-note">
         <div class="callout-label">Dosing Reference</div>
-        <table class="dosing-ref-table">
+        <div class="dosing-ref-table-wrap"><table class="dosing-ref-table">
           <thead><tr><th>Chemical</th><th>Recommended Range</th><th>Notes</th></tr></thead>
           <tbody>
             <tr><td><a href="../chemicals/alkaline-detergent.html">Alkaline Detergent (PBW)</a></td><td>0.5–3%</td><td>1.3% by weight per manufacturer standard</td></tr>
@@ -214,6 +251,7 @@
           </tbody>
         </table>
       </div>
+    </div>
     </div>
 
     <!-- ═══ IBC TOTES ═══ -->
@@ -232,14 +270,10 @@
             <select id="ibc-size"><option value="350">350 gallon IBC</option><option value="550">550 gallon IBC</option></select>
           </div>
         </div>
-        <div class="unit-pair">
-          <div class="field-group"><label>Inches from manway lip (inches)</label>
-            <div class="num-wrap"><input type="number" id="ibc-inches" placeholder="e.g. 2.25" min="0" step="0.25"><div class="num-spinner"><button data-id="ibc-inches" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="ibc-inches" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
-            <span class="field-hint">Top-down dry dip</span>
-          </div>
-          <div class="field-group"><label>Inches from manway lip (mm)</label>
-            <div class="num-wrap"><input type="number" id="ibc-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="ibc-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="ibc-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
-          </div>
+        <div class="input-row-label">From Manway Lip <span class="input-row-note">top-down dry dip</span></div>
+        <div class="input-row">
+          <div class="input-group"><div class="input-with-unit"><input type="number" id="ibc-inches" placeholder="0.00" min="0" step="0.25"><span class="input-unit-label">in</span><div class="num-spinner"><button data-id="ibc-inches" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="ibc-inches" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div></div>
+          <div class="input-group"><div class="input-with-unit"><input type="number" id="ibc-mm" placeholder="" min="0" step="1"><span class="input-unit-label">mm</span><div class="num-spinner"><button data-id="ibc-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="ibc-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div></div>
         </div>
         <div class="result-box">
           <div class="result-box-head">Tote Contents</div>
@@ -266,12 +300,19 @@
             <select id="pt-size"><option value="2000">2,000 gal tank</option><option value="3500">3,500 gal tank</option></select>
           </div>
         </div>
-        <div class="unit-pair">
-          <div class="field-group"><label>Sight glass reading (inches)</label>
-            <div class="num-wrap"><input type="number" id="pt-inches" placeholder="e.g. 8" min="0" step="0.25"><div class="num-spinner"><button data-id="pt-inches" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="pt-inches" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
+        <div class="input-row-label">Sight Glass Reading</div>
+        <div class="input-row">
+          <div class="input-group"><div class="input-with-unit">
+              <input type="number" id="pt-inches" placeholder="0.00" min="0" step="0.25">
+              <span class="input-unit-label">in</span>
+              <div class="num-spinner"><button data-id="pt-inches" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="pt-inches" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div>
+            </div>
           </div>
-          <div class="field-group"><label>Sight glass reading (mm)</label>
-            <div class="num-wrap"><input type="number" id="pt-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="pt-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="pt-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
+          <div class="input-group"><div class="input-with-unit">
+              <input type="number" id="pt-mm" placeholder="" min="0" step="1">
+              <span class="input-unit-label">mm</span>
+              <div class="num-spinner"><button data-id="pt-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="pt-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div>
+            </div>
           </div>
         </div>
         <div class="result-box">
@@ -294,14 +335,10 @@
       <div class="calc-card">
         <h3>100L Tank Strapping Chart</h3>
         <p class="calc-desc">Liquid height from tank bottom. Returns liters, gallons, and approximate 750 mL bottle count.</p>
-        <div class="unit-pair">
-          <div class="field-group"><label>Height from bottom (inches)</label>
-            <div class="num-wrap"><input type="number" id="s100-in" placeholder="e.g. 5.25" min="0" max="19.75" step="0.25"><div class="num-spinner"><button data-id="s100-in" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="s100-in" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
-            <span class="field-hint">Max 19.75 in</span>
-          </div>
-          <div class="field-group"><label>Height from bottom (mm)</label>
-            <div class="num-wrap"><input type="number" id="s100-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="s100-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="s100-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
-          </div>
+        <div class="input-row-label">Height from Bottom <span class="input-row-note">max 19.75 in</span></div>
+        <div class="input-row">
+          <div class="input-group"><div class="input-with-unit"><input type="number" id="s100-in" placeholder="0.00" min="0" step="0.25" max="19.75"><span class="input-unit-label">in</span><div class="num-spinner"><button data-id="s100-in" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="s100-in" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div></div>
+          <div class="input-group"><div class="input-with-unit"><input type="number" id="s100-mm" placeholder="" min="0" step="1"><span class="input-unit-label">mm</span><div class="num-spinner"><button data-id="s100-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="s100-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div></div>
         </div>
         <div class="result-box">
           <div class="result-box-head">100L Tank Contents</div>
@@ -315,14 +352,10 @@
       <div class="calc-card">
         <h3>30L Tank Strapping Chart</h3>
         <p class="calc-desc">Liquid height from tank bottom. Returns liters, gallons, and approximate 750 mL bottle count.</p>
-        <div class="unit-pair">
-          <div class="field-group"><label>Height from bottom (inches)</label>
-            <div class="num-wrap"><input type="number" id="s30-in" placeholder="e.g. 7.5" min="0" max="16.63" step="0.25"><div class="num-spinner"><button data-id="s30-in" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="s30-in" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
-            <span class="field-hint">Max 16.63 in</span>
-          </div>
-          <div class="field-group"><label>Height from bottom (mm)</label>
-            <div class="num-wrap"><input type="number" id="s30-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="s30-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="s30-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
-          </div>
+        <div class="input-row-label">Height from Bottom <span class="input-row-note">max 16.63 in</span></div>
+        <div class="input-row">
+          <div class="input-group"><div class="input-with-unit"><input type="number" id="s30-in" placeholder="0.00" min="0" step="0.25" max="16.63"><span class="input-unit-label">in</span><div class="num-spinner"><button data-id="s30-in" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="s30-in" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div></div>
+          <div class="input-group"><div class="input-with-unit"><input type="number" id="s30-mm" placeholder="" min="0" step="1"><span class="input-unit-label">mm</span><div class="num-spinner"><button data-id="s30-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="s30-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div></div>
         </div>
         <div class="result-box">
           <div class="result-box-head">30L Tank Contents</div>
@@ -340,12 +373,28 @@
       <div class="calc-card">
         <h3>Spray Ball Flow Rate — 2,000 gal Tank</h3>
         <p class="calc-desc">Time how long the spray ball takes to fill to the top of the cone (53 gallons) to determine GPM.</p>
-        <div class="field-row">
-          <div class="field-group"><label>Minutes to fill cone (53 gal)</label>
-            <div class="num-wrap"><input type="number" id="f-min" placeholder="e.g. 5.5" min="0.1" step="0.1"><div class="num-spinner"><button data-id="f-min" data-step="0.1" data-dec="1" data-dir="1">▲</button><button data-id="f-min" data-step="0.1" data-dec="1" data-dir="-1">▼</button></div></div>
+        <div class="input-row-label">Time to Fill Cone (53 gal)</div>
+        <div class="input-row">
+          <div class="input-group"><div class="input-with-unit">
+              <input type="number" id="f-min" placeholder="0.0" min="0.1" step="0.1">
+              <span class="input-unit-label">min</span>
+              <div class="num-spinner"><button data-id="f-min" data-step="0.1" data-dec="1" data-dir="1">▲</button><button data-id="f-min" data-step="0.1" data-dec="1" data-dir="-1">▼</button></div>
+            </div>
           </div>
-          <div class="field-group"><label>Desired volume (gallons) — optional</label>
-            <div class="num-wrap"><input type="number" id="f-gal" placeholder="e.g. 100" min="0" step="1"><div class="num-spinner"><button data-id="f-gal" data-step="1" data-dec="0" data-dir="1">▲</button><button data-id="f-gal" data-step="1" data-dec="0" data-dir="-1">▼</button></div></div>
+        </div>
+        <div class="input-row-label">Desired Volume <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--dawn-muted);font-size:0.65rem;">— optional</span></div>
+        <div class="input-row">
+          <div class="input-group"><div class="input-with-unit">
+              <input type="number" id="f-gal" placeholder="0.00" min="0" step="0.01">
+              <span class="input-unit-label">gal</span>
+              <div class="num-spinner"><button data-id="f-gal" data-step="0.01" data-dec="2" data-dir="1">▲</button><button data-id="f-gal" data-step="0.01" data-dec="2" data-dir="-1">▼</button></div>
+            </div>
+          </div>
+          <div class="input-group"><div class="input-with-unit">
+              <input type="number" id="f-L" placeholder="0" min="0" step="1">
+              <span class="input-unit-label">L</span>
+              <div class="num-spinner"><button data-id="f-L" data-step="0.100" data-dec="3" data-dir="1">▲</button><button data-id="f-L" data-step="0.100" data-dec="3" data-dir="-1">▼</button></div>
+            </div>
           </div>
         </div>
         <div class="result-box">
@@ -358,6 +407,7 @@
         <div class="callout callout-note" style="margin-top:16px"><div class="callout-label">Reference</div>Measured on Tank #4: <strong>5.5 min to fill cone = 9.6 GPM</strong></div>
       </div>
     </div>
+
 
   </div>
 </div>
@@ -375,18 +425,20 @@ function set(id,val){ if(el(id)) el(id).textContent=val; }
 
 // ── Hold-to-repeat spinner ──
 var _spinTimer=null, _spinInterval=null;
-function spinStart(btn) {
+function doSpinStep(btn) {
   var id=btn.getAttribute('data-id'), step=parseFloat(btn.getAttribute('data-step')),
       dec=parseInt(btn.getAttribute('data-dec')), dir=parseInt(btn.getAttribute('data-dir'));
-  function doStep(){
-    var inp=el(id); var cur=parseFloat(inp.value)||0;
-    var mn=inp.hasAttribute('min')?parseFloat(inp.getAttribute('min')):-1e9;
-    var mx=inp.hasAttribute('max')?parseFloat(inp.getAttribute('max')):1e9;
-    inp.value=Math.max(mn,Math.min(mx,parseFloat((cur+dir*step).toFixed(dec+2)))).toFixed(dec);
-    inp.dispatchEvent(new Event('input',{bubbles:true}));
-  }
-  doStep();
-  _spinTimer=setTimeout(function(){ _spinInterval=setInterval(doStep,60); },400);
+  var inp=el(id); if(!inp) return;
+  var cur=parseFloat(inp.value)||0;
+  var mn=inp.hasAttribute('min')?parseFloat(inp.getAttribute('min')):-1e9;
+  var mx=inp.hasAttribute('max')?parseFloat(inp.getAttribute('max')):1e9;
+  inp.value=Math.max(mn,Math.min(mx,parseFloat((cur+dir*step).toFixed(dec+2)))).toFixed(dec);
+  inp.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function spinStart(btn) {
+  doSpinStep(btn);
+  var self = btn;
+  _spinTimer=setTimeout(function(){ _spinInterval=setInterval(function(){ doSpinStep(self); },60); },400);
 }
 function spinStop(){ clearTimeout(_spinTimer); clearInterval(_spinInterval); }
 document.addEventListener('mouseup', spinStop);
@@ -424,8 +476,10 @@ document.querySelectorAll('#vessel-presets .preset').forEach(function(btn){
   btn.addEventListener('click',function(){
     document.querySelectorAll('#vessel-presets .preset').forEach(function(b){b.classList.remove('on');});
     this.classList.add('on');
-    el('d-vol').value=this.getAttribute('data-vol');
-    el('d-vol').dispatchEvent(new Event('input',{bubbles:true}));
+    var gal=parseFloat(this.getAttribute('data-vol'));
+    el('d-vol').value=parseFloat(gal).toFixed(2);
+    el('d-vol-L').value=(gal*3.78541).toFixed(3);
+    calcDilution();
   });
 });
 document.querySelectorAll('#chem-presets .preset').forEach(function(btn){
@@ -438,7 +492,21 @@ document.querySelectorAll('#chem-presets .preset').forEach(function(btn){
 });
 
 // ── Dilution ──
-['d-vol','d-pct','d-ckg','d-clb'].forEach(function(id){ el(id).addEventListener('input',calcDilution); });
+// Gal ↔ L sync for dilution volume
+var _dvolLock=false;
+el('d-vol').addEventListener('input',function(){
+  if(_dvolLock)return; _dvolLock=true;
+  var g=parseFloat(this.value);
+  el('d-vol-L').value=!isNaN(g)&&g>=0?(g*3.78541).toFixed(3):'';
+  _dvolLock=false; calcDilution();
+});
+el('d-vol-L').addEventListener('input',function(){
+  if(_dvolLock)return; _dvolLock=true;
+  var L=parseFloat(this.value);
+  el('d-vol').value=!isNaN(L)&&L>=0?(L/3.78541).toFixed(2):'';
+  _dvolLock=false; calcDilution();
+});
+['d-pct','d-ckg','d-clb'].forEach(function(id){ el(id).addEventListener('input',calcDilution); });
 function calcDilution(){
   var vol=parseFloat(el('d-vol').value), pct=parseFloat(el('d-pct').value);
   if(isNaN(vol)||isNaN(pct)||vol<=0||pct<=0){
@@ -629,7 +697,20 @@ function calcSmall30(){
 }
 
 // ── Flow rate ──
-['f-min','f-gal'].forEach(function(id){el(id).addEventListener('input',calcFlow);});
+var _fvolLock=false;
+el('f-gal').addEventListener('input',function(){
+  if(_fvolLock)return; _fvolLock=true;
+  var g=parseFloat(this.value);
+  el('f-L').value=!isNaN(g)&&g>=0?(g*3.78541).toFixed(3):'';
+  _fvolLock=false; calcFlow();
+});
+el('f-L').addEventListener('input',function(){
+  if(_fvolLock)return; _fvolLock=true;
+  var L=parseFloat(this.value);
+  el('f-gal').value=!isNaN(L)&&L>=0?(L/3.78541).toFixed(2):'';
+  _fvolLock=false; calcFlow();
+});
+el('f-min').addEventListener('input',calcFlow);
 function calcFlow(){
   var min=parseFloat(el('f-min').value);
   if(isNaN(min)||min<=0){set('f-gpm','—');el('f-time-row').classList.add('result-hidden');return;}
@@ -644,10 +725,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.nav-section-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');});});
   document.querySelectorAll('.nav-folder-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');});});
   var tog=el('sidebarToggle'),sb=el('sidebar'),mn=document.querySelector('.main');
-  if(tog)tog.addEventListener('click',function(){sb.classList.toggle('sidebar-collapsed');mn.classList.toggle('sidebar-collapsed');tog.textContent=sb.classList.contains('sidebar-collapsed')?'▶':'◀';});
   var FK='ops-guide-favorites';
   function gf(){try{return JSON.parse(localStorage.getItem(FK))||[];}catch(e){return[];}}
-  function sf(f){localStorage.setItem(FK,JSON.stringify(f));}
+    function sf(f){localStorage.setItem(FK,JSON.stringify(f));}
   function rf(){
     var f=gf(),l=el('favoritesList'),s=el('favoritesSection');
     if(!l)return; l.innerHTML='';
@@ -665,10 +745,84 @@ document.addEventListener('DOMContentLoaded', function() {
   rf();uf();
   // Attach spinner hold listeners after DOM ready
   document.querySelectorAll('.num-spinner button').forEach(function(btn){
-    btn.addEventListener('mousedown',function(e){e.preventDefault();spinStart(this);});
-    btn.addEventListener('touchstart',function(e){e.preventDefault();spinStart(this);},{passive:false});
+    // Desktop: click for single step, mousedown hold for repeat
+    var _held = false;
+    btn.addEventListener('mousedown',function(e){
+      _held = false;
+      var self = this;
+      _spinTimer = setTimeout(function(){
+        _held = true;
+        _spinInterval = setInterval(function(){ doSpinStep(self); }, 80);
+      }, 500);
+    });
+    btn.addEventListener('click',function(e){
+      if (!_held) { doSpinStep(this); }
+      _held = false;
+    });
+    // Mobile: touchend for single tap (not touchstart), prevent context menu
+    btn.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+    btn.addEventListener('touchstart',function(e){ e.preventDefault(); },{passive:false});
+    btn.addEventListener('touchend',function(e){
+      e.preventDefault();
+      spinStop();
+      doSpinStep(this);
+    });
   });
 });
+</script>
+
+<script>
+  // ── Sidebar state management ──
+  (function() {
+    var sb = document.getElementById('sidebar');
+    var mn = document.querySelector('.main');
+    if (!sb || !mn) return;
+
+    function isCollapsed() { return localStorage.getItem('sidebarCollapsed') === '1'; }
+
+    function applyState(collapsed) {
+      if (collapsed) {
+        sb.classList.add('sidebar-collapsed');
+        mn.classList.add('sidebar-collapsed');
+      } else {
+        sb.classList.remove('sidebar-collapsed');
+        mn.classList.remove('sidebar-collapsed');
+      }
+    }
+
+    function toggle() {
+      var nowCollapsed = !sb.classList.contains('sidebar-collapsed');
+      applyState(nowCollapsed);
+      localStorage.setItem('sidebarCollapsed', nowCollapsed ? '1' : '0');
+    }
+
+    // Apply saved state immediately (no flash)
+    applyState(isCollapsed());
+
+    // Wire up desktop hamburger
+    var tog = document.getElementById('sidebarToggle');
+    if (tog) tog.addEventListener('click', toggle);
+
+    // Wire up mobile hamburger
+    var mobileBtn = document.getElementById('mobileMenuBtn');
+    var overlay = document.getElementById('mobileOverlay');
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', function() {
+        sb.classList.toggle('mobile-open');
+        if (overlay) overlay.classList.toggle('active');
+      });
+    }
+    if (overlay) overlay.addEventListener('click', function() {
+      sb.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+    });
+    if (sb) sb.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        sb.classList.remove('mobile-open');
+        if (overlay) overlay.classList.remove('active');
+      });
+    });
+  })();
 </script>
 </body>
 </html>

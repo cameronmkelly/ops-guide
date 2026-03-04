@@ -209,17 +209,17 @@ body {
 }
 .sidebar-toggle {
   background: none;
-  border: none;
+  border: 1px solid var(--dawn-hl-med);
+  border-radius: 5px;
   color: var(--dawn-muted);
   cursor: pointer;
-  font-size: 0.7rem;
-  padding: 2px 4px;
-  margin-top: 4px;
+  font-size: 1rem;
+  padding: 4px 8px;
   flex-shrink: 0;
-  transition: color 0.15s;
+  transition: color 0.15s, background 0.15s;
   line-height: 1;
 }
-.sidebar-toggle:hover { color: var(--dawn-subtle); }
+.sidebar-toggle:hover { color: var(--dawn-subtle); background: var(--dawn-hl-low); }
 
 /* Collapsed sidebar */
 .sidebar.sidebar-collapsed { width: 36px; }
@@ -531,3 +531,187 @@ a.wikilink:hover { border-color: var(--lyt-teal); }
 .fav-btn:hover { border-color: #907aa9; color: #907aa9; }
 .fav-btn.fav-active { border-color: #5a4a6a; color: #5a4a6a; background: rgba(90,74,106,0.08); }
 .fav-btn .fav-star { font-size: 0.9rem; }
+
+
+/* ══════════════════════════════════════════
+   MOBILE / RESPONSIVE
+   Breakpoint: 768px and below
+   ══════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* ── Layout: stack sidebar over content ── */
+  body {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 200;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 0;
+  }
+
+  /* ── Mobile header bar ── */
+  .mobile-header {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    background: var(--main-base);
+    border-bottom: 1px solid var(--dawn-hl-med);
+    padding: 8px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 150;
+  }
+
+  .mobile-header-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--main-subtle);
+  }
+
+  .sidebar .sidebar-toggle { display: none; }
+  .mobile-menu-btn {
+    background: none;
+    border: 1px solid var(--dawn-hl-med);
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--dawn-subtle);
+    line-height: 1;
+  }
+
+  /* ── Overlay when sidebar is open ── */
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 190;
+  }
+  .mobile-overlay.active { display: block; }
+
+  /* ── Calculator card padding ── */
+  .calc-card { padding: 16px; }
+  .calc-card h3 { font-size: 0.95rem; }
+
+  /* ── Inputs fill their container, no fixed max-width ── */
+  .num-wrap { width: 100%; }
+  .field-group select { width: 100%; }
+
+  /* ── Page content padding ── */
+  .content {
+    padding: 20px 16px 40px;
+  }
+
+  /* ── Page title area ── */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .page-title { font-size: 1.4rem; }
+
+  /* ── Callouts ── */
+  .callout { padding: 12px 14px; }
+
+  /* ── Tables: scroll horizontally ── */
+  .content table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.85rem;
+  }
+
+  /* ── Result tables in calculators ── */
+  .result-table { font-size: 0.88rem; }
+
+  /* ── Index cards: single column ── */
+  .index-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  /* ── Calculator tabs: stack and scroll on mobile ── */
+  .calc-tabs { gap:2px; padding:3px; }
+  .calc-tab { font-size:0.72rem; padding:6px 8px; flex:1; min-width:0; }
+
+  /* ── Field inputs: full width on mobile ── */
+  .field-group { width: 100% !important; max-width: 100% !important; }
+  .unit-pair .field-group { width: 100% !important; }
+
+  /* ── Calculator field rows: stack vertically ── */
+  .field-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .field-row.three {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Unit pair: stack on mobile ── */
+  .unit-pair {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* ── Preset buttons: wrap tightly ── */
+  .preset-group {
+    gap: 6px;
+  }
+
+  .preset {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+
+  /* ── SOP step numbers ── */
+  .step-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Spec tables ── */
+  .spec-table td, .spec-table th {
+    padding: 7px 10px;
+    font-size: 0.83rem;
+  }
+
+  /* ── Fill bar label ── */
+  .fill-label { font-size: 0.78rem; }
+
+  /* ── Dosing reference table ── */
+  .dosing-ref-table {
+    font-size: 0.78rem;
+  }
+  .dosing-ref-table td, .dosing-ref-table th {
+    padding: 6px 8px;
+  }
+}
+
+
+/* ── Mobile header: hidden on desktop ── */
+.mobile-header { display: none; }
+

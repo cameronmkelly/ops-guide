@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facility Calculators — [Company Name] Operations Guide</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.calc-tabs { display:flex; gap:0; margin-bottom:0; border-bottom:2px solid var(--dawn-hl-med); }
+.calc-tab { padding:10px 22px; border:none; background:none; font-family:var(--font-heading); font-size:0.88rem; font-weight:600; color:var(--dawn-muted); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.15s; }
+.calc-tab:hover { color:var(--dawn-subtle); }
+.calc-tab.active { color:var(--lyt-teal); border-bottom-color:var(--lyt-teal); }
+.calc-panel { display:none; padding-top:24px; }
+.calc-panel.active { display:block; }
+
+.calc-card { background:var(--dawn-surface); border:1px solid var(--dawn-hl-med); border-radius:10px; padding:24px 28px; margin-bottom:24px; }
+.calc-card h3 { margin:0 0 4px; font-size:1.05rem; color:var(--dawn-text); font-weight:700; }
+.calc-desc { font-size:0.86rem; color:var(--dawn-muted); margin-bottom:18px; }
+
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; margin-bottom:16px; }
+.field-row.three { grid-template-columns:1fr 1fr 1fr; }
+.field-group { display:flex; flex-direction:column; gap:5px; }
+.field-group label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--dawn-subtle); }
+.field-group input, .field-group select { padding:9px 40px 9px 12px; border:1.5px solid var(--dawn-hl-med); border-radius:6px; font-size:0.92rem; background:white; color:var(--dawn-text); font-family:var(--font-body); transition:border-color 0.15s; }
+/* Always-visible bigger spinners */
+.field-group input[type=number] { -moz-appearance:textfield; appearance:textfield; position:relative; }
+.num-wrap { position:relative; display:flex; }
+.num-wrap input[type=number] { width:100%; padding-right:32px; -moz-appearance:textfield; }
+.num-wrap input[type=number]::-webkit-inner-spin-button,
+.num-wrap input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
+.num-spinner { position:absolute; right:0; top:0; bottom:0; width:30px; display:flex; flex-direction:column; border-left:1.5px solid var(--dawn-hl-med); overflow:hidden; border-radius:0 6px 6px 0; }
+.num-spinner button { flex:1; background:white; border:none; cursor:pointer; font-size:0.65rem; color:var(--dawn-subtle); line-height:1; transition:background 0.1s; padding:0; }
+.num-spinner button:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
+.num-spinner button:active { background:var(--dawn-hl-med); }
+.field-group input:focus, .field-group select:focus { outline:none; border-color:var(--lyt-teal); box-shadow:0 0 0 3px rgba(26,125,164,0.1); }
+.field-hint { font-size:0.7rem; color:var(--dawn-muted); }
+
+/* Vessel presets */
+.preset-section { margin-bottom:18px; }
+.preset-section-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:var(--dawn-muted); margin-bottom:6px; }
+.preset-group { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+.preset { padding:5px 13px; border-radius:20px; border:1.5px solid var(--dawn-hl-med); background:white; font-size:0.76rem; color:var(--dawn-subtle); cursor:pointer; transition:all 0.15s; font-family:var(--font-body); font-weight:500; }
+.preset:hover { border-color:var(--lyt-teal); color:var(--lyt-teal); background:rgba(26,125,164,0.04); }
+.preset.on { background:var(--lyt-teal); border-color:var(--lyt-teal); color:white; }
+.preset.vessel { border-color:var(--dawn-pine); color:var(--dawn-pine); }
+.preset.vessel:hover, .preset.vessel.on { background:var(--dawn-pine); border-color:var(--dawn-pine); color:white; }
+
+/* Results table */
+.result-box { background:var(--dawn-overlay); border:1px solid var(--dawn-hl-med); border-radius:8px; overflow:hidden; margin-top:16px; }
+.result-box-head { background:var(--dawn-hl-med); padding:9px 16px; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--dawn-subtle); }
+.result-table { width:100%; border-collapse:collapse; }
+.result-table td { padding:8px 16px; border-bottom:1px solid var(--dawn-hl-low); font-size:0.88rem; }
+.result-table tr:last-child td { border-bottom:none; }
+.result-table td:first-child { color:var(--dawn-subtle); width:55%; }
+.result-table td:last-child { font-family:var(--font-mono); font-weight:700; color:var(--dawn-text); text-align:right; }
+.result-table tr.result-empty td:last-child { color:var(--dawn-muted); font-weight:400; font-family:var(--font-body); }
+.result-table tr.result-hidden { display:none; }
+
+.fill-wrap { padding:8px 16px 12px; border-top:1px solid var(--dawn-hl-low); }
+.fill-track { background:var(--dawn-hl-med); border-radius:4px; height:10px; overflow:hidden; margin-bottom:4px; }
+.fill-bar { height:100%; border-radius:4px; transition:width 0.4s ease, background 0.3s ease; width:0%; background:var(--dawn-pine); }
+.fill-label { font-size:0.7rem; color:var(--dawn-muted); }
+
+.instructions { background:rgba(40,105,131,0.06); border:1px solid rgba(40,105,131,0.2); border-radius:6px; padding:12px 16px; font-size:0.83rem; color:var(--dawn-subtle); line-height:1.7; margin-bottom:16px; }
+.instructions strong { color:var(--dawn-pine); }
+
+.unit-pair { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; }
+.unit-pair .field-group input { padding:9px 32px 9px 12px; }
+
+.dosing-ref-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin:8px 0 0; border-radius:6px; overflow:hidden; }
+.dosing-ref-table th { background:var(--dawn-overlay); text-align:left; font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--dawn-subtle); padding:7px 14px; border-bottom:1px solid var(--dawn-hl-med); }
+.dosing-ref-table td { padding:8px 14px; border-bottom:1px solid var(--dawn-hl-low); vertical-align:top; color:var(--dawn-text); }
+.dosing-ref-table tr:last-child td { border-bottom:none; }
+.dosing-ref-table td:first-child { font-weight:600; }
+.dosing-ref-table td a { color:var(--lyt-link); text-decoration:none; }
+.dosing-ref-table td a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">◀</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
+<div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links">
+<a href="../administrative/index.html" class="nav-link">Administrative Index</a>
+<a href="../administrative/product-receiving.html" class="nav-sub">Product & Material Receiving</a>
+</div></div>
+<div class="nav-section collapsed" data-section="chem"><div class="nav-section-label">Chemicals & SDS</div><div class="nav-section-links">
+<a href="../chemicals/index.html" class="nav-link">Chemical Index</a>
+<a href="../chemicals/alkaline-detergent.html" class="nav-sub">Alkaline Detergent</a>
+<a href="../chemicals/citric-acid.html" class="nav-sub">Citric Acid</a>
+<a href="../chemicals/sanitizer.html" class="nav-sub">No-Rinse Sanitizer</a>
+</div></div>
+<div class="nav-section collapsed" data-section="equip"><div class="nav-section-label">Equipment</div><div class="nav-section-links">
+<a href="../equipment/index.html" class="nav-link">Equipment Index</a>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Lab & Bottling</div><div class="nav-folder-links">
+<a href="../equipment/lab-bottling/alcohol-meter.html" class="nav-sub">Digital Alcohol Meter</a>
+<a href="../equipment/lab-bottling/bottle-filler.html" class="nav-sub">Manual Bottle Filler</a>
+</div></div>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Material Handling</div><div class="nav-folder-links">
+<a href="../equipment/material-handling/forklift.html" class="nav-sub">Electric Forklift</a>
+<a href="../equipment/material-handling/pallet-jack.html" class="nav-sub">Pallet Jack</a>
+</div></div>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Utilities</div><div class="nav-folder-links">
+<a href="../equipment/utilities/city-water.html" class="nav-sub">City Water</a>
+<a href="../equipment/utilities/compressed-air.html" class="nav-sub">Compressed Air System</a>
+<a href="../equipment/utilities/generator.html" class="nav-sub">Emergency Generator</a>
+<a href="../equipment/utilities/hvac.html" class="nav-sub">HVAC & Exhaust System</a>
+<a href="../equipment/utilities/hot-water.html" class="nav-sub">Hot Water System</a>
+<a href="../equipment/utilities/ro-water.html" class="nav-sub">RO Water System</a>
+</div></div>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Vessels</div><div class="nav-folder-links">
+<a href="../equipment/vessels/ibc-tote.html" class="nav-sub">IBC Tote</a>
+<a href="../equipment/vessels/processing-tank.html" class="nav-sub">Processing Tank</a>
+</div></div>
+</div></div>
+<div class="nav-section collapsed" data-section="sops"><div class="nav-section-label">SOPs</div><div class="nav-section-links">
+<a href="../sops/index.html" class="nav-link">SOP Index</a>
+<a href="../sops/barrel-disgorging.html" class="nav-sub">SOP: Barrel Disgorging</a>
+<a href="../sops/bottle-filling.html" class="nav-sub">SOP: Bottling Line</a>
+<a href="../sops/cip-processing-tanks.html" class="nav-sub">SOP: Processing Tank CIP</a>
+<a href="../sops/proofing.html" class="nav-sub">SOP: Proofing Operations</a>
+</div></div>
+<div class="nav-section" data-section="tools"><div class="nav-section-label">Tools & Concepts</div><div class="nav-section-links">
+<a href="../tools/index.html" class="nav-link">Tools & Concepts Index</a>
+<a href="../tools/chemical-dilution.html" class="nav-sub active">Facility Calculators</a>
+<a href="../tools/proofing-concepts.html" class="nav-sub">Proofing Concepts</a>
+</div></div>
+<div class="nav-section collapsed" data-section="vend"><div class="nav-section-label">Vendors</div><div class="nav-section-links">
+<a href="../vendors/index.html" class="nav-link">Vendor Index</a>
+<a href="../vendors/chemical-supplier.html" class="nav-sub">[Chemical Supplier]</a>
+<a href="../vendors/equipment-fabricator.html" class="nav-sub">[Equipment Fabricator]</a>
+<a href="../vendors/forklift-service.html" class="nav-sub">[Forklift Service Vendor]</a>
+<a href="../vendors/maintenance-service.html" class="nav-sub">[Maintenance & Service Vendor]</a>
+</div></div></div></nav>
+<div class="main">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="../index.html">Home</a> / <a href="index.html">Tools &amp; Concepts Index</a> / Calculators</div>
+    <h1 class="page-title">Facility Calculators<button class="fav-btn" id="favBtn" data-title="Facility Calculators" data-url="tools/chemical-dilution.html"><span class="fav-star">☆</span><span class="fav-label">Pin</span></button></h1>
+    <p class="page-subtitle">Chemical dilution and tank volume calculators for daily operations.</p>
+  </div>
+  <div class="page-content">
+
+        <div class="calc-tabs">
+      <button class="calc-tab active" onclick="showCalc('dilution',this)">Chemical Dilution</button>
+      <button class="calc-tab" onclick="showCalc('ibc',this)">IBC Totes</button>
+      <button class="calc-tab" onclick="showCalc('process',this)">Processing Tanks</button>
+      <button class="calc-tab" onclick="showCalc('small',this)">Small Tanks</button>
+      <button class="calc-tab" onclick="showCalc('flow',this)">Flow Rate</button>
+    </div>
+
+    <!-- ═══ DILUTION ═══ -->
+    <div id="calc-dilution" class="calc-panel active">
+      <div class="calc-card">
+        <h3>Chemical Dilution by Weight</h3>
+        <p class="calc-desc">Select a vessel to set the minimum working volume, then choose a chemical preset or enter your own values.</p>
+        <div class="preset-section">
+          <div class="preset-section-label">1 — Select vessel (sets minimum working volume)</div>
+          <div class="preset-group" id="vessel-presets">
+            <button class="preset vessel" data-vol="30">IBC 350 gal</button>
+            <button class="preset vessel" data-vol="30">IBC 550 gal</button>
+            <button class="preset vessel" data-vol="88">2,000 gal tank</button>
+            <button class="preset vessel" data-vol="140">3,500 gal tank</button>
+            <button class="preset vessel" data-vol="2.64">100L tank</button>
+            <button class="preset vessel" data-vol="0.79">30L tank</button>
+          </div>
+        </div>
+        <div class="preset-section">
+          <div class="preset-section-label">2 — Select chemical preset</div>
+          <div class="preset-group" id="chem-presets">
+            <button class="preset" data-pct="0.5">PBW low 0.5%</button>
+            <button class="preset" data-pct="1.3">PBW standard 1.3%</button>
+            <button class="preset" data-pct="3.0">PBW heavy 3.0%</button>
+            <button class="preset" data-pct="1.5">Citric copper 1.5%</button>
+            <button class="preset" data-pct="2.5">Citric SS 2.5%</button>
+            <button class="preset" data-pct="0.5">FB400 low 0.5%</button>
+            <button class="preset" data-pct="1.0">FB400 std 1.0%</button>
+            <button class="preset" data-pct="1.5">FB400 high 1.5%</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label>Working Volume (gallons)</label>
+            <div class="num-wrap"><input type="number" id="d-vol" placeholder="e.g. 90" min="0" step="1"><div class="num-spinner"><button data-id="d-vol" data-step="1" data-dec="0" data-dir="1">▲</button><button data-id="d-vol" data-step="1" data-dec="0" data-dir="-1">▼</button></div></div>
+            <span class="field-hint">Enter manually or select vessel above</span>
+          </div>
+          <div class="field-group"><label>Target Concentration (% by weight)</label>
+            <div class="num-wrap"><input type="number" id="d-pct" placeholder="e.g. 1.3" min="0" max="100" step="0.1"><div class="num-spinner"><button data-id="d-pct" data-step="0.1" data-dec="1" data-dir="1">▲</button><button data-id="d-pct" data-step="0.1" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+          <div class="field-group"><label>Chemical Package Size (kg) — optional</label>
+            <div class="num-wrap"><input type="number" id="d-ckg" placeholder="e.g. 22.5" min="0" step="0.5"><div class="num-spinner"><button data-id="d-ckg" data-step="0.5" data-dec="1" data-dir="1">▲</button><button data-id="d-ckg" data-step="0.5" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+          <div class="field-group"><label>Chemical Package Size (lbs) — optional</label>
+            <div class="num-wrap"><input type="number" id="d-clb" placeholder="e.g. 50" min="0" step="0.5"><div class="num-spinner"><button data-id="d-clb" data-step="0.5" data-dec="1" data-dir="1">▲</button><button data-id="d-clb" data-step="0.5" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-box-head">Chemical Required</div>
+          <table class="result-table">
+            <tr><td>Grams</td><td id="d-g">—</td></tr>
+            <tr><td>Kilograms</td><td id="d-kg">—</td></tr>
+            <tr><td>Pounds</td><td id="d-lb">—</td></tr>
+            <tr><td>Ounces</td><td id="d-oz">—</td></tr>
+            <tr id="d-ckg-row" class="result-hidden"><td id="d-ckg-label">Packages needed (kg)</td><td id="d-ckg-r">—</td></tr>
+            <tr id="d-clb-row" class="result-hidden"><td id="d-clb-label">Packages needed (lbs)</td><td id="d-clb-r">—</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="callout callout-note">
+        <div class="callout-label">Dosing Reference</div>
+        <table class="dosing-ref-table">
+          <thead><tr><th>Chemical</th><th>Recommended Range</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><a href="../chemicals/alkaline-detergent.html">Alkaline Detergent (PBW)</a></td><td>0.5–3%</td><td>1.3% by weight per manufacturer standard</td></tr>
+            <tr><td><a href="../chemicals/citric-acid.html">Citric Acid (stainless)</a></td><td>2.0–3.0%</td><td>70–120°F for 20 min; 10 min at 150°F+ for passivation</td></tr>
+            <tr><td><a href="../chemicals/citric-acid.html">Citric Acid (copper)</a></td><td>1.5–2.5%</td><td>Do not use nitric acid on copper — causes pitting</td></tr>
+            <tr><td><a href="../chemicals/sanitizer.html">FB400 Sodium Percarbonate</a></td><td>0.5–1.5%</td><td>~5 g/L typical dose; up to 15 g/L per specs</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ IBC TOTES ═══ -->
+    <div id="calc-ibc" class="calc-panel">
+      <div class="calc-card">
+        <h3>IBC Tote Volume</h3>
+        <p class="calc-desc">Top-down dry dip measurement from the manway lip.</p>
+        <div class="instructions">
+          <strong>How to measure:</strong><br>
+          1. Measure in inches from the <strong>bottom of the manway lip</strong> (yellow mark) down to the top of the liquid.<br>
+          2. If the tote is not level, average readings at 12 o'clock and 3 o'clock.<br>
+          <strong>Rate:</strong> 8.3333 gal/inch &nbsp;|&nbsp; <strong>350 gal full:</strong> 358 &nbsp;|&nbsp; <strong>550 gal full:</strong> 558
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label>Tank Size</label>
+            <select id="ibc-size"><option value="350">350 gallon IBC</option><option value="550">550 gallon IBC</option></select>
+          </div>
+        </div>
+        <div class="unit-pair">
+          <div class="field-group"><label>Inches from manway lip (inches)</label>
+            <div class="num-wrap"><input type="number" id="ibc-inches" placeholder="e.g. 2.25" min="0" step="0.25"><div class="num-spinner"><button data-id="ibc-inches" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="ibc-inches" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
+            <span class="field-hint">Top-down dry dip</span>
+          </div>
+          <div class="field-group"><label>Inches from manway lip (mm)</label>
+            <div class="num-wrap"><input type="number" id="ibc-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="ibc-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="ibc-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-box-head">Tote Contents</div>
+          <table class="result-table">
+            <tr><td>Total gallons</td><td id="ibc-gal">—</td></tr>
+            <tr><td>Total liters</td><td id="ibc-L">—</td></tr>
+            <tr><td>% Full</td><td id="ibc-pct">—</td></tr>
+          </table>
+          <div class="fill-wrap"><div class="fill-track"><div class="fill-bar" id="ibc-bar"></div></div><div class="fill-label" id="ibc-bar-label">Enter a measurement above</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PROCESSING TANKS ═══ -->
+    <div id="calc-process" class="calc-panel">
+      <div class="calc-card">
+        <h3>Processing Tank Volume</h3>
+        <p class="calc-desc">Bottom-up wet dip from the sight glass — inches above the cone base.</p>
+        <div class="instructions">
+          <strong>2,000 gal:</strong> 53 gal cone + 17.5 gal/inch &nbsp;|&nbsp; <strong>3,500 gal:</strong> 90 gal cone + 24.4 gal/inch
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label>Tank</label>
+            <select id="pt-size"><option value="2000">2,000 gal tank</option><option value="3500">3,500 gal tank</option></select>
+          </div>
+        </div>
+        <div class="unit-pair">
+          <div class="field-group"><label>Sight glass reading (inches)</label>
+            <div class="num-wrap"><input type="number" id="pt-inches" placeholder="e.g. 8" min="0" step="0.25"><div class="num-spinner"><button data-id="pt-inches" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="pt-inches" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
+          </div>
+          <div class="field-group"><label>Sight glass reading (mm)</label>
+            <div class="num-wrap"><input type="number" id="pt-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="pt-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="pt-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-box-head">Tank Contents</div>
+          <table class="result-table">
+            <tr><td>Total gallons</td><td id="pt-gal">—</td></tr>
+            <tr><td>Total liters</td><td id="pt-L">—</td></tr>
+            <tr><td>% Full</td><td id="pt-pct">—</td></tr>
+            <tr><td>Cone only (0 in)</td><td id="pt-cone">—</td></tr>
+            <tr><td>Bottom of manway (2 in)</td><td id="pt-manway">—</td></tr>
+            <tr><td>Bottom of aux valve</td><td id="pt-aux">—</td></tr>
+          </table>
+          <div class="fill-wrap"><div class="fill-track"><div class="fill-bar" id="pt-bar"></div></div><div class="fill-label" id="pt-bar-label">Enter a measurement above</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SMALL TANKS ═══ -->
+    <div id="calc-small" class="calc-panel">
+      <div class="calc-card">
+        <h3>100L Tank Strapping Chart</h3>
+        <p class="calc-desc">Liquid height from tank bottom. Returns liters, gallons, and approximate 750 mL bottle count.</p>
+        <div class="unit-pair">
+          <div class="field-group"><label>Height from bottom (inches)</label>
+            <div class="num-wrap"><input type="number" id="s100-in" placeholder="e.g. 5.25" min="0" max="19.75" step="0.25"><div class="num-spinner"><button data-id="s100-in" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="s100-in" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
+            <span class="field-hint">Max 19.75 in</span>
+          </div>
+          <div class="field-group"><label>Height from bottom (mm)</label>
+            <div class="num-wrap"><input type="number" id="s100-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="s100-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="s100-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-box-head">100L Tank Contents</div>
+          <table class="result-table">
+            <tr><td>Liters</td><td id="s100-L">—</td></tr>
+            <tr><td>Gallons</td><td id="s100-gal">—</td></tr>
+            <tr><td>≈ 750 mL bottles</td><td id="s100-btl">—</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="calc-card">
+        <h3>30L Tank Strapping Chart</h3>
+        <p class="calc-desc">Liquid height from tank bottom. Returns liters, gallons, and approximate 750 mL bottle count.</p>
+        <div class="unit-pair">
+          <div class="field-group"><label>Height from bottom (inches)</label>
+            <div class="num-wrap"><input type="number" id="s30-in" placeholder="e.g. 7.5" min="0" max="16.63" step="0.25"><div class="num-spinner"><button data-id="s30-in" data-step="0.25" data-dec="2" data-dir="1">▲</button><button data-id="s30-in" data-step="0.25" data-dec="2" data-dir="-1">▼</button></div></div>
+            <span class="field-hint">Max 16.63 in</span>
+          </div>
+          <div class="field-group"><label>Height from bottom (mm)</label>
+            <div class="num-wrap"><input type="number" id="s30-mm" placeholder="" min="0" step="1"><div class="num-spinner"><button data-id="s30-mm" data-step="1" data-dec="1" data-dir="1">▲</button><button data-id="s30-mm" data-step="1" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-box-head">30L Tank Contents</div>
+          <table class="result-table">
+            <tr><td>Liters</td><td id="s30-L">—</td></tr>
+            <tr><td>Gallons</td><td id="s30-gal">—</td></tr>
+            <tr><td>≈ 750 mL bottles</td><td id="s30-btl">—</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ FLOW RATE ═══ -->
+    <div id="calc-flow" class="calc-panel">
+      <div class="calc-card">
+        <h3>Spray Ball Flow Rate — 2,000 gal Tank</h3>
+        <p class="calc-desc">Time how long the spray ball takes to fill to the top of the cone (53 gallons) to determine GPM.</p>
+        <div class="field-row">
+          <div class="field-group"><label>Minutes to fill cone (53 gal)</label>
+            <div class="num-wrap"><input type="number" id="f-min" placeholder="e.g. 5.5" min="0.1" step="0.1"><div class="num-spinner"><button data-id="f-min" data-step="0.1" data-dec="1" data-dir="1">▲</button><button data-id="f-min" data-step="0.1" data-dec="1" data-dir="-1">▼</button></div></div>
+          </div>
+          <div class="field-group"><label>Desired volume (gallons) — optional</label>
+            <div class="num-wrap"><input type="number" id="f-gal" placeholder="e.g. 100" min="0" step="1"><div class="num-spinner"><button data-id="f-gal" data-step="1" data-dec="0" data-dir="1">▲</button><button data-id="f-gal" data-step="1" data-dec="0" data-dir="-1">▼</button></div></div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-box-head">Flow Results</div>
+          <table class="result-table">
+            <tr><td>Flow rate</td><td id="f-gpm">—</td></tr>
+            <tr id="f-time-row" class="result-hidden"><td>Time to fill desired volume</td><td id="f-time">—</td></tr>
+          </table>
+        </div>
+        <div class="callout callout-note" style="margin-top:16px"><div class="callout-label">Reference</div>Measured on Tank #4: <strong>5.5 min to fill cone = 9.6 GPM</strong></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showCalc(name, btn) {
+  document.querySelectorAll('.calc-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.calc-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('calc-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+function el(id){ return document.getElementById(id); }
+function v(id){ var x=parseFloat(el(id).value); return x; }
+function set(id,val){ if(el(id)) el(id).textContent=val; }
+
+// ── Hold-to-repeat spinner ──
+var _spinTimer=null, _spinInterval=null;
+function spinStart(btn) {
+  var id=btn.getAttribute('data-id'), step=parseFloat(btn.getAttribute('data-step')),
+      dec=parseInt(btn.getAttribute('data-dec')), dir=parseInt(btn.getAttribute('data-dir'));
+  function doStep(){
+    var inp=el(id); var cur=parseFloat(inp.value)||0;
+    var mn=inp.hasAttribute('min')?parseFloat(inp.getAttribute('min')):-1e9;
+    var mx=inp.hasAttribute('max')?parseFloat(inp.getAttribute('max')):1e9;
+    inp.value=Math.max(mn,Math.min(mx,parseFloat((cur+dir*step).toFixed(dec+2)))).toFixed(dec);
+    inp.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  doStep();
+  _spinTimer=setTimeout(function(){ _spinInterval=setInterval(doStep,60); },400);
+}
+function spinStop(){ clearTimeout(_spinTimer); clearInterval(_spinInterval); }
+document.addEventListener('mouseup', spinStop);
+document.addEventListener('touchend', spinStop);
+
+
+// ── Bidirectional unit sync ──
+function syncPair(inId, mmId, calcFn) {
+  var lock=false;
+  el(inId).addEventListener('input', function(){
+    if(lock)return; lock=true;
+    var inches=parseFloat(this.value);
+    el(mmId).value = !isNaN(inches)&&inches>=0 ? (inches*25.4).toFixed(1) : '';
+    lock=false; calcFn();
+  });
+  el(mmId).addEventListener('input', function(){
+    if(lock)return; lock=true;
+    var mm=parseFloat(this.value);
+    el(inId).value = !isNaN(mm)&&mm>=0 ? (mm*0.0393701).toFixed(3) : '';
+    lock=false; calcFn();
+  });
+}
+
+// ── Fill bar ──
+function fillBar(barId,labelId,pct,cap){
+  var bar=el(barId); if(!bar)return;
+  var p=Math.min(100,Math.max(0,pct));
+  bar.style.width=p+'%';
+  bar.style.background=p>90?'#b4637a':p>70?'#ea9d34':'#286983';
+  if(labelId) el(labelId).textContent=p.toFixed(1)+'% full of '+cap.toLocaleString()+' gal';
+}
+
+// ── Vessel presets ──
+document.querySelectorAll('#vessel-presets .preset').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#vessel-presets .preset').forEach(function(b){b.classList.remove('on');});
+    this.classList.add('on');
+    el('d-vol').value=this.getAttribute('data-vol');
+    el('d-vol').dispatchEvent(new Event('input',{bubbles:true}));
+  });
+});
+document.querySelectorAll('#chem-presets .preset').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#chem-presets .preset').forEach(function(b){b.classList.remove('on');});
+    this.classList.add('on');
+    el('d-pct').value=this.getAttribute('data-pct');
+    el('d-pct').dispatchEvent(new Event('input',{bubbles:true}));
+  });
+});
+
+// ── Dilution ──
+['d-vol','d-pct','d-ckg','d-clb'].forEach(function(id){ el(id).addEventListener('input',calcDilution); });
+function calcDilution(){
+  var vol=parseFloat(el('d-vol').value), pct=parseFloat(el('d-pct').value);
+  if(isNaN(vol)||isNaN(pct)||vol<=0||pct<=0){
+    ['d-g','d-kg','d-lb','d-oz'].forEach(function(id){set(id,'—');}); return;
+  }
+  var massKg=(pct/100)*vol*3.78541;
+  set('d-g',(massKg*1000).toFixed(0)+' g');
+  set('d-kg',massKg.toFixed(3)+' kg');
+  set('d-lb',(massKg*2.20462).toFixed(2)+' lbs');
+  set('d-oz',(massKg*2.20462*16).toFixed(1)+' oz');
+  var ckg=parseFloat(el('d-ckg').value), clb=parseFloat(el('d-clb').value);
+  if(!isNaN(ckg)&&ckg>0){set('d-ckg-r',(massKg/ckg).toFixed(2)+' × '+ckg+' kg');el('d-ckg-row').classList.remove('result-hidden');}
+  else el('d-ckg-row').classList.add('result-hidden');
+  if(!isNaN(clb)&&clb>0){set('d-clb-r',(massKg*2.20462/clb).toFixed(2)+' × '+clb+' lb');el('d-clb-row').classList.remove('result-hidden');}
+  else el('d-clb-row').classList.add('result-hidden');
+}
+
+// ── IBC ──
+syncPair('ibc-inches','ibc-mm',calcIBC);
+el('ibc-size').addEventListener('change',calcIBC);
+function calcIBC(){
+  var inches=parseFloat(el('ibc-inches').value), size=parseInt(el('ibc-size').value);
+  if(isNaN(inches)||inches<0){set('ibc-gal','—');set('ibc-L','—');set('ibc-pct','—');el('ibc-bar').style.width='0%';el('ibc-bar-label').textContent='Enter a measurement above';return;}
+  var fullVal=size===350?358:558, gal=Math.max(0,fullVal-(inches*8.3333));
+  var L=gal/0.264172, pct=(gal/size)*100;
+  set('ibc-gal',gal.toFixed(2)+' gal'); set('ibc-L',L.toFixed(1)+' L'); set('ibc-pct',pct.toFixed(1)+'%');
+  fillBar('ibc-bar','ibc-bar-label',pct,size);
+}
+
+// ── Processing Tanks ──
+syncPair('pt-inches','pt-mm',calcPT);
+el('pt-size').addEventListener('change',calcPT);
+function calcPT(){
+  var inches=parseFloat(el('pt-inches').value), size=parseInt(el('pt-size').value);
+  if(isNaN(inches)||inches<0){set('pt-gal','—');set('pt-L','—');set('pt-pct','—');set('pt-cone','—');set('pt-manway','—');set('pt-aux','—');el('pt-bar').style.width='0%';el('pt-bar-label').textContent='Enter a measurement above';return;}
+  var cfg=size===2000?{cone:53,gpi:17.5,mw:2,aux:5.5}:{cone:90,gpi:24.4,mw:2,aux:7.5};
+  var gal=cfg.cone+(inches*cfg.gpi);
+  set('pt-gal',gal.toFixed(1)+' gal'); set('pt-L',(gal*3.78541).toFixed(0)+' L');
+  set('pt-pct',Math.min(100,(gal/size)*100).toFixed(1)+'%');
+  set('pt-cone',cfg.cone+' gal');
+  set('pt-manway',(cfg.cone+(cfg.mw*cfg.gpi)).toFixed(1)+' gal');
+  set('pt-aux',(cfg.cone+(cfg.aux*cfg.gpi)).toFixed(1)+' gal');
+  fillBar('pt-bar','pt-bar-label',(gal/size)*100,size);
+}
+
+// ── Small tanks ──
+var chart100L=[
+[0.25,1.01,0.27,1.3],
+[0.5,2.02,0.53,2.7],
+[0.75,3.02,0.8,4.0],
+[1.0,4.03,1.07,5.4],
+[1.25,5.04,1.33,6.7],
+[1.5,6.05,1.6,8.1],
+[1.75,7.06,1.86,9.4],
+[2.0,8.06,2.13,10.8],
+[2.25,9.07,2.4,12.1],
+[2.5,10.08,2.66,13.4],
+[2.75,11.09,2.93,14.8],
+[3.0,12.1,3.2,16.1],
+[3.25,13.1,3.46,17.5],
+[3.5,14.11,3.73,18.8],
+[3.75,15.12,3.99,20.2],
+[4.0,16.13,4.26,21.5],
+[4.25,17.14,4.53,22.8],
+[4.5,18.14,4.79,24.2],
+[4.75,19.15,5.06,25.5],
+[5.0,20.16,5.33,26.9],
+[5.25,21.17,5.59,28.2],
+[5.5,22.18,5.86,29.6],
+[5.75,23.18,6.12,30.9],
+[6.0,24.19,6.39,32.3],
+[6.25,25.2,6.66,33.6],
+[6.5,26.21,6.92,34.9],
+[6.75,27.22,7.19,36.3],
+[7.0,28.23,7.46,37.6],
+[7.25,29.23,7.72,39.0],
+[7.5,30.24,7.99,40.3],
+[7.75,31.25,8.26,41.7],
+[8.0,32.26,8.52,43.0],
+[8.25,33.27,8.79,44.4],
+[8.5,34.27,9.05,45.7],
+[8.75,35.28,9.32,47.0],
+[9.0,36.29,9.59,48.4],
+[9.25,37.3,9.85,49.7],
+[9.5,38.31,10.12,51.1],
+[9.75,39.31,10.39,52.4],
+[10.0,40.32,10.65,53.8],
+[10.25,41.33,10.92,55.1],
+[10.5,42.34,11.18,56.5],
+[10.75,43.35,11.45,57.8],
+[11.0,44.35,11.72,59.1],
+[11.25,45.36,11.98,60.5],
+[11.5,46.37,12.25,61.8],
+[11.75,47.38,12.52,63.2],
+[12.0,48.39,12.78,64.5],
+[12.25,49.39,13.05,65.9],
+[12.5,50.4,13.31,67.2],
+[12.75,51.41,13.58,68.5],
+[13.0,52.42,13.85,69.9],
+[13.25,53.43,14.11,71.2],
+[13.5,54.43,14.38,72.6],
+[13.75,55.44,14.65,73.9],
+[14.0,56.45,14.91,75.3],
+[14.25,57.46,15.18,76.6],
+[14.5,58.47,15.45,78.0],
+[14.75,59.47,15.71,79.3],
+[15.0,60.48,15.98,80.6],
+[15.25,61.49,16.24,82.0],
+[15.5,62.5,16.51,83.3],
+[15.75,63.51,16.78,84.7],
+[16.0,64.51,17.04,86.0],
+[16.25,65.52,17.31,87.4],
+[16.5,66.53,17.58,88.7],
+[16.75,67.54,17.84,90.1],
+[17.0,68.55,18.11,91.4],
+[17.25,69.55,18.37,92.7],
+[17.5,70.56,18.64,94.1],
+[17.75,71.57,18.91,95.4],
+[18.0,72.58,19.17,96.8],
+[18.25,73.59,19.44,98.1],
+[18.5,74.59,19.71,99.5],
+[18.75,75.6,19.97,100.8],
+[19.0,76.61,20.24,102.1],
+[19.25,77.62,20.5,103.5],
+[19.5,78.63,20.77,104.8],
+[19.75,79.64,21.04,106.2]
+];
+var chart30L=[
+[1,0.44,0.81,0.21],
+[2,0.88,1.62,0.43],
+[3,1.31,2.43,0.64],
+[4,1.75,3.24,0.86],
+[5,2.19,4.05,1.07],
+[6,2.63,4.86,1.28],
+[7,3.06,5.67,1.5],
+[8,3.5,6.48,1.71],
+[9,3.94,7.28,1.92],
+[10,4.38,8.09,2.14],
+[11,4.81,8.9,2.35],
+[12,5.25,9.71,2.57],
+[13,5.69,10.52,2.78],
+[14,6.13,11.33,2.99],
+[15,6.56,12.14,3.21],
+[16,7.0,12.95,3.42],
+[17,7.44,13.76,3.63],
+[18,7.88,14.57,3.85],
+[19,8.31,15.38,4.06],
+[20,8.75,16.19,4.28],
+[21,9.19,17.0,4.49],
+[22,9.63,17.81,4.7],
+[23,10.06,18.62,4.92],
+[24,10.5,19.42,5.13],
+[25,10.94,20.23,5.35],
+[26,11.38,21.04,5.56],
+[27,11.81,21.85,5.77],
+[28,12.25,22.66,5.99],
+[29,12.69,23.47,6.2],
+[30,13.13,24.28,6.41],
+[31,13.56,25.09,6.63],
+[32,14.0,25.9,6.84],
+[33,14.44,26.71,7.06],
+[34,14.88,27.52,7.27],
+[35,15.31,28.33,7.48],
+[36,15.75,29.14,7.7],
+[37,16.19,29.95,7.91],
+[38,16.63,30.76,8.12]
+];
+function strappingLookup(chart,heightCol,inches){
+  var best=null,bd=999;
+  for(var i=0;i<chart.length;i++){var d=Math.abs(chart[i][heightCol]-inches);if(d<bd){bd=d;best=chart[i];}}
+  return best;
+}
+syncPair('s100-in','s100-mm',calcSmall100);
+function calcSmall100(){
+  var inches=parseFloat(el('s100-in').value);
+  if(isNaN(inches)||inches<=0){set('s100-L','—');set('s100-gal','—');set('s100-btl','—');return;}
+  var row=strappingLookup(chart100L,0,inches);
+  if(!row)return;
+  set('s100-L',row[1].toFixed(2)+' L'); set('s100-gal',row[2].toFixed(2)+' gal'); set('s100-btl',row[3].toFixed(1)+' bottles');
+}
+syncPair('s30-in','s30-mm',calcSmall30);
+function calcSmall30(){
+  var inches=parseFloat(el('s30-in').value);
+  if(isNaN(inches)||inches<=0){set('s30-L','—');set('s30-gal','—');set('s30-btl','—');return;}
+  var row=strappingLookup(chart30L,1,inches); // col[1]=height_in
+  if(!row)return;
+  set('s30-L',row[2].toFixed(2)+' L'); set('s30-gal',row[3].toFixed(2)+' gal'); set('s30-btl',row[0]+' bottles');
+}
+
+// ── Flow rate ──
+['f-min','f-gal'].forEach(function(id){el(id).addEventListener('input',calcFlow);});
+function calcFlow(){
+  var min=parseFloat(el('f-min').value);
+  if(isNaN(min)||min<=0){set('f-gpm','—');el('f-time-row').classList.add('result-hidden');return;}
+  set('f-gpm',(53/min).toFixed(2)+' GPM');
+  var gal=parseFloat(el('f-gal').value);
+  if(!isNaN(gal)&&gal>0){set('f-time',(gal/(53/min)).toFixed(1)+' min');el('f-time-row').classList.remove('result-hidden');}
+  else el('f-time-row').classList.add('result-hidden');
+}
+
+// ── Sidebar / Favorites ──
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.nav-section-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');});});
+  document.querySelectorAll('.nav-folder-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');});});
+  var tog=el('sidebarToggle'),sb=el('sidebar'),mn=document.querySelector('.main');
+  if(tog)tog.addEventListener('click',function(){sb.classList.toggle('sidebar-collapsed');mn.classList.toggle('sidebar-collapsed');tog.textContent=sb.classList.contains('sidebar-collapsed')?'▶':'◀';});
+  var FK='ops-guide-favorites';
+  function gf(){try{return JSON.parse(localStorage.getItem(FK))||[];}catch(e){return[];}}
+  function sf(f){localStorage.setItem(FK,JSON.stringify(f));}
+  function rf(){
+    var f=gf(),l=el('favoritesList'),s=el('favoritesSection');
+    if(!l)return; l.innerHTML='';
+    if(f.length===0){l.innerHTML='<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';if(s)s.classList.add('collapsed');return;}
+    if(s)s.classList.remove('collapsed');
+    var rp=document.getElementById('sidebar').getAttribute('data-root')||'';
+    f.forEach(function(fav){var r=document.createElement('div');r.className='nav-fav-item';
+      r.innerHTML='<a href="'+rp+fav.url+'">'+fav.title+'</a><button class="nav-fav-remove" data-url="'+fav.url+'" title="Remove">✕</button>';
+      l.appendChild(r);});
+    l.querySelectorAll('.nav-fav-remove').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();var u=this.getAttribute('data-url');sf(gf().filter(function(x){return x.url!==u;}));rf();uf();});});
+  }
+  function uf(){var b=el('favBtn');if(!b)return;var f=gf(),u=b.getAttribute('data-url'),is=f.some(function(x){return x.url===u;});b.classList.toggle('fav-active',is);b.querySelector('.fav-star').textContent=is?'★':'☆';b.querySelector('.fav-label').textContent=is?'Pinned':'Pin';}
+  var fb=el('favBtn');
+  if(fb)fb.addEventListener('click',function(){var b=el('favBtn'),f=gf(),u=b.getAttribute('data-url'),t=b.getAttribute('data-title'),i=f.findIndex(function(x){return x.url===u;});if(i>=0)f.splice(i,1);else f.push({url:u,title:t});sf(f);rf();uf();});
+  rf();uf();
+  // Attach spinner hold listeners after DOM ready
+  document.querySelectorAll('.num-spinner button').forEach(function(btn){
+    btn.addEventListener('mousedown',function(e){e.preventDefault();spinStart(this);});
+    btn.addEventListener('touchstart',function(e){e.preventDefault();spinStart(this);},{passive:false});
+  });
+});
+</script>
+</body>
+</html>

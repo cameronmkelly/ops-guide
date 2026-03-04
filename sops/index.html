@@ -23,18 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ── Sidebar collapse ──
-  var toggle = document.getElementById('sidebarToggle');
-  var sidebar = document.getElementById('sidebar');
-  var main = document.querySelector('.main');
-  if (toggle) {
-    toggle.addEventListener('click', function() {
-      sidebar.classList.toggle('sidebar-collapsed');
-      main.classList.toggle('sidebar-collapsed');
-      toggle.textContent = sidebar.classList.contains('sidebar-collapsed') ? '▶' : '◀';
-    });
-  }
-
-  // ── Favorites ──
+    // ── Favorites ──
   var FAVS_KEY = 'ops-guide-favorites';
 
   function getFavs() {
@@ -114,7 +103,12 @@ document.addEventListener('DOMContentLoaded', function() {
 </head>
 <body>
 
-<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">◀</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
+<div class="mobile-header">
+  <span class="mobile-header-title">Operations Guide</span>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+</div>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">☰</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
 <div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links">
 <a href="../administrative/index.html" class="nav-link">Administrative Index</a>
 <a href="../administrative/product-receiving.html" class="nav-sub">Product & Material Receiving</a>
@@ -220,5 +214,62 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
+
+<script>
+  
+</script>
+<script>
+  // ── Sidebar state management ──
+  (function() {
+    var sb = document.getElementById('sidebar');
+    var mn = document.querySelector('.main');
+    if (!sb || !mn) return;
+
+    function isCollapsed() { return localStorage.getItem('sidebarCollapsed') === '1'; }
+
+    function applyState(collapsed) {
+      if (collapsed) {
+        sb.classList.add('sidebar-collapsed');
+        mn.classList.add('sidebar-collapsed');
+      } else {
+        sb.classList.remove('sidebar-collapsed');
+        mn.classList.remove('sidebar-collapsed');
+      }
+    }
+
+    function toggle() {
+      var nowCollapsed = !sb.classList.contains('sidebar-collapsed');
+      applyState(nowCollapsed);
+      localStorage.setItem('sidebarCollapsed', nowCollapsed ? '1' : '0');
+    }
+
+    // Apply saved state immediately (no flash)
+    applyState(isCollapsed());
+
+    // Wire up desktop hamburger
+    var tog = document.getElementById('sidebarToggle');
+    if (tog) tog.addEventListener('click', toggle);
+
+    // Wire up mobile hamburger
+    var mobileBtn = document.getElementById('mobileMenuBtn');
+    var overlay = document.getElementById('mobileOverlay');
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', function() {
+        sb.classList.toggle('mobile-open');
+        if (overlay) overlay.classList.toggle('active');
+      });
+    }
+    if (overlay) overlay.addEventListener('click', function() {
+      sb.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+    });
+    if (sb) sb.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        sb.classList.remove('mobile-open');
+        if (overlay) overlay.classList.remove('active');
+      });
+    });
+  })();
+</script>
 </body>
 </html>
