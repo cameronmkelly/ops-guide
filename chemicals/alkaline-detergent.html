@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alkaline Detergent — [Company Name] Operations Guide</title>
+<link rel="stylesheet" href="../style.css"><script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ── Section collapse ──
+  document.querySelectorAll('.nav-section-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+    });
+  });
+
+  // ── Folder collapse ──
+  document.querySelectorAll('.nav-folder-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+    });
+  });
+
+  // ── Sidebar collapse ──
+  var toggle = document.getElementById('sidebarToggle');
+  var sidebar = document.getElementById('sidebar');
+  var main = document.querySelector('.main');
+  if (toggle) {
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('sidebar-collapsed');
+      main.classList.toggle('sidebar-collapsed');
+      toggle.textContent = sidebar.classList.contains('sidebar-collapsed') ? '▶' : '◀';
+    });
+  }
+
+  // ── Favorites ──
+  var FAVS_KEY = 'ops-guide-favorites';
+
+  function getFavs() {
+    try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function saveFavs(favs) {
+    localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+  }
+
+  function renderFavs() {
+    var favs = getFavs();
+    var list = document.getElementById('favoritesList');
+    var section = document.getElementById('favoritesSection');
+    if (!list) return;
+    list.innerHTML = '';
+    if (favs.length === 0) {
+      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';
+      if (section) section.classList.add('collapsed');
+      return;
+    }
+    if (section) section.classList.remove('collapsed');
+    favs.forEach(function(fav) {
+      var row = document.createElement('div');
+      row.className = 'nav-fav-item';
+      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a>' +
+        '<button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">✕</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.nav-fav-remove').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var url = this.getAttribute('data-url');
+        var favs = getFavs().filter(function(f) { return f.url !== url; });
+        saveFavs(favs);
+        renderFavs();
+        updateFavBtn();
+      });
+    });
+  }
+
+  function updateFavBtn() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var favs = getFavs();
+    var url = window.location.pathname.split('/').pop() || 'index.html';
+    var isFav = favs.some(function(f) { return f.url === btn.getAttribute('data-url'); });
+    btn.classList.toggle('fav-active', isFav);
+    btn.querySelector('.fav-star').textContent = isFav ? '★' : '☆';
+    btn.querySelector('.fav-label').textContent = isFav ? 'Pinned' : 'Pin';
+  }
+
+  function toggleFav() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var favs = getFavs();
+    var url = btn.getAttribute('data-url');
+    var title = btn.getAttribute('data-title');
+    var idx = favs.findIndex(function(f) { return f.url === url; });
+    if (idx >= 0) {
+      favs.splice(idx, 1);
+    } else {
+      favs.push({ url: url, title: title });
+    }
+    saveFavs(favs);
+    renderFavs();
+    updateFavBtn();
+  }
+
+  var favBtn = document.getElementById('favBtn');
+  if (favBtn) favBtn.addEventListener('click', toggleFav);
+
+  renderFavs();
+  updateFavBtn();
+});
+</script>
+</head><body>
+<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">◀</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
+<div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links">
+<a href="../administrative/index.html" class="nav-link">Administrative Index</a>
+<a href="../administrative/product-receiving.html" class="nav-sub">Product & Material Receiving</a>
+</div></div>
+<div class="nav-section" data-section="chem"><div class="nav-section-label">Chemicals & SDS</div><div class="nav-section-links">
+<a href="../chemicals/index.html" class="nav-link">Chemical Index</a>
+<a href="../chemicals/alkaline-detergent.html" class="nav-sub active">Alkaline Detergent</a>
+<a href="../chemicals/citric-acid.html" class="nav-sub">Citric Acid</a>
+<a href="../chemicals/sanitizer.html" class="nav-sub">No-Rinse Sanitizer</a>
+</div></div>
+<div class="nav-section collapsed" data-section="equip"><div class="nav-section-label">Equipment</div><div class="nav-section-links">
+<a href="../equipment/index.html" class="nav-link">Equipment Index</a>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Lab & Bottling</div><div class="nav-folder-links">
+<a href="../equipment/lab-bottling/alcohol-meter.html" class="nav-sub">Digital Alcohol Meter</a>
+<a href="../equipment/lab-bottling/bottle-filler.html" class="nav-sub">Manual Bottle Filler</a>
+</div></div>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Material Handling</div><div class="nav-folder-links">
+<a href="../equipment/material-handling/forklift.html" class="nav-sub">Electric Forklift</a>
+<a href="../equipment/material-handling/pallet-jack.html" class="nav-sub">Pallet Jack</a>
+</div></div>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Utilities</div><div class="nav-folder-links">
+<a href="../equipment/utilities/city-water.html" class="nav-sub">City Water</a>
+<a href="../equipment/utilities/compressed-air.html" class="nav-sub">Compressed Air System</a>
+<a href="../equipment/utilities/generator.html" class="nav-sub">Emergency Generator</a>
+<a href="../equipment/utilities/hvac.html" class="nav-sub">HVAC & Exhaust System</a>
+<a href="../equipment/utilities/hot-water.html" class="nav-sub">Hot Water System</a>
+<a href="../equipment/utilities/ro-water.html" class="nav-sub">RO Water System</a>
+</div></div>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Vessels</div><div class="nav-folder-links">
+<a href="../equipment/vessels/ibc-tote.html" class="nav-sub">IBC Tote</a>
+<a href="../equipment/vessels/processing-tank.html" class="nav-sub">Processing Tank</a>
+</div></div>
+</div></div>
+<div class="nav-section collapsed" data-section="sops"><div class="nav-section-label">SOPs</div><div class="nav-section-links">
+<a href="../sops/index.html" class="nav-link">SOP Index</a>
+<a href="../sops/barrel-disgorging.html" class="nav-sub">SOP: Barrel Disgorging</a>
+<a href="../sops/bottle-filling.html" class="nav-sub">SOP: Bottling Line</a>
+<a href="../sops/cip-processing-tanks.html" class="nav-sub">SOP: Processing Tank CIP</a>
+<a href="../sops/proofing.html" class="nav-sub">SOP: Proofing Operations</a>
+</div></div>
+<div class="nav-section collapsed" data-section="tools"><div class="nav-section-label">Tools & Concepts</div><div class="nav-section-links">
+<a href="../tools/index.html" class="nav-link">Tools & Concepts Index</a>
+<a href="../tools/chemical-dilution.html" class="nav-sub">Facility Calculators</a>
+<a href="../tools/proofing-concepts.html" class="nav-sub">Proofing Concepts</a>
+</div></div>
+<div class="nav-section collapsed" data-section="vend"><div class="nav-section-label">Vendors</div><div class="nav-section-links">
+<a href="../vendors/index.html" class="nav-link">Vendor Index</a>
+<a href="../vendors/chemical-supplier.html" class="nav-sub">[Chemical Supplier]</a>
+<a href="../vendors/equipment-fabricator.html" class="nav-sub">[Equipment Fabricator]</a>
+<a href="../vendors/forklift-service.html" class="nav-sub">[Forklift Service Vendor]</a>
+<a href="../vendors/maintenance-service.html" class="nav-sub">[Maintenance & Service Vendor]</a>
+</div></div></div></nav>
+<div class="main">
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Home</a> / <a href="index.html">Chemicals</a> / Alkaline Detergent</div>
+  <h1 class="page-title">Alkaline Detergent<button class="fav-btn" id="favBtn" data-title="Alkaline Detergent" data-url="chemicals/alkaline-detergent.html"><span class="fav-star">☆</span><span class="fav-label">Pin</span></button></h1>
+  <p class="page-subtitle">Oxidizing alkaline cleaner for Tier 2 CIP of stainless steel equipment.</p>
+</div>
+<div class="page-content"><p><strong>Purpose:</strong> Used for Phase 2 (Tier 2) CIP cleaning of stainless steel processing equipment. Provides powerful alkaline oxidizing action to remove organic soil, kill odor-causing bacteria, and deodorize surfaces. Environmentally benign — decomposes into oxygen, water, and soda ash.</p>
+<h2>Technical Properties</h2>
+<table class="spec-table"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>
+  <tr><td>Chemical ID</td><td>DETERGENT-01</td></tr>
+  <tr><td>Appearance</td><td>Free-flowing white granular powder</td></tr>
+  <tr><td>pH (10 g/L solution)</td><td>10.4–10.6 (strongly alkaline)</td></tr>
+  <tr><td>Solubility</td><td>Soluble in water; &gt;70% dissolved after 5 min in 10°C water</td></tr>
+  <tr><td>Vendor</td><td><a href="../vendors/chemical-supplier.html" class="wikilink">[Chemical Supplier]</a></td></tr>
+  <tr><td>SDS Location</td><td>[Link to or describe SDS file location]</td></tr>
+</tbody></table>
+<h2>Dosing & Application</h2>
+<div class="callout callout-note"><div class="callout-label">Always Verify Against Calculator</div>Use the <a href="../tools/chemical-dilution.html" class="wikilink">Chemical Dilution Calculator</a> for any volume not listed in the benchmarks below.</div>
+<p><strong>Standard dose: 25 g/gal (~0.66% by weight).</strong> Acceptable range: 0.5–1.5% by weight.</p>
+<table class="dosing-table">
+  <thead><tr><th>Tank / Working Volume</th><th>Standard Dose (kg)</th><th>Standard Dose (lbs)</th></tr></thead>
+  <tbody>
+    <tr><td>[Tank A] — [XX] gal</td><td>[X.X] kg</td><td>[X.X] lbs</td></tr>
+    <tr><td>[Tank B] — [XX] gal</td><td>[X.X] kg</td><td>[X.X] lbs</td></tr>
+    <tr><td>[Bottle Filler deep clean]</td><td>2% by weight solution</td><td>—</td></tr>
+  </tbody>
+</table>
+<h2>Storage & Handling</h2>
+<ul>
+  <li>Store between −25°C and +40°C in a strictly segregated area, away from strong acids and reducing agents.</li>
+  <li><strong>Do not store on wooden pallets.</strong> Do not stack bags more than 8 high.</li>
+  <li>Store upright in the original container. Never return unused material to the original container.</li>
+  <li>FIFO rotation — test for active oxygen content after 1 year of storage.</li>
+</ul>
+<h2>Material Compatibility</h2>
+<p><strong>Compatible:</strong> PVC, polyethylene, stainless steel (304L, 316, 316L), PTFE, glass, porcelain.</p>
+<p><strong>Incompatible — never mix with:</strong> Concentrated acids or alkalis, reducing agents, heavy metal salts, iron, copper, nickel. Natural and synthetic rubbers are also incompatible.</p>
+<h2>Safety & First Aid</h2>
+<div class="callout callout-warning"><div class="callout-label">Hazards</div>Strong oxidant. Corrosive to eyes, mucous membranes, and skin. Contact with combustible materials may cause fires.</div>
+<ul>
+  <li><strong>Eye contact:</strong> Flush immediately with water for at least 15 minutes. Treat eyes first if both face and eyes are exposed.</li>
+  <li><strong>Skin contact:</strong> Flush immediately with soap and water; remove contaminated clothing.</li>
+  <li><strong>Ingestion:</strong> Do NOT induce vomiting. Rinse mouth and give large quantities of water.</li>
+  <li><strong>Fire:</strong> Water is the preferred extinguishing agent.</li>
+</ul>
+<div class="related-docs"><h2>Used In</h2>
+<div class="related-grid">
+  <a href="../sops/cip-processing-tanks.html" class="related-card"><div class="related-card-type">SOP</div><div class="related-card-title">Processing Tank CIP (Tier 2)</div></a>
+  <a href="../sops/bottle-filling.html" class="related-card"><div class="related-card-type">SOP</div><div class="related-card-title">Bottling Line CIP</div></a>
+  <a href="../vendors/chemical-supplier.html" class="related-card"><div class="related-card-type">Vendor</div><div class="related-card-title">Chemical Supplier</div></a>
+  <a href="../tools/chemical-dilution.html" class="related-card"><div class="related-card-type">Tool</div><div class="related-card-title">Chemical Dilution Calculator</div></a>
+</div></div></div>
+</div>
+</body></html>
