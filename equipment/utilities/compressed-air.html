@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   restoreNavState();
-  document.documentElement.classList.remove('nav-loading');
+  var _np=document.getElementById('_np');if(_np)_np.remove();
 
   // ── Sidebar collapse ──
     // ── Favorites ──

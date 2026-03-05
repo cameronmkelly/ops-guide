@@ -81,9 +81,8 @@ body {
   border-right: 1px solid var(--dawn-hl-med);
   scrollbar-width: thin;
   scrollbar-color: var(--main-muted) transparent;
-  transition: width 0.25s ease, opacity 0.15s ease;
+  transition: width 0.25s ease;
 }
-html.nav-loading #sidebar { opacity: 0; }
 
 .sidebar-header {
   padding: 18px 14px 14px;
