@@ -8,12 +8,12 @@
 <style>
 /* ── Calc tabs — two fixed rows ── */
 .page-content { padding-left:24px !important; padding-right:24px !important; }
-.calc-tabs { display:grid; grid-template-columns:repeat(6, 1fr); grid-template-rows:auto auto; gap:0; margin:0 -60px 0; padding:0 60px; border-bottom:2px solid var(--dawn-hl-med); }
+.calc-tabs { display:grid; grid-template-columns:repeat(6, 1fr); grid-template-rows:auto auto; gap:0; margin:0 -60px 0; padding:0 60px; border-bottom:2px solid var(--dawn-base); }
 .calc-tab:nth-child(1) { grid-column:span 3; }
 .calc-tab:nth-child(2) { grid-column:span 3; }
-.calc-tab:nth-child(3) { grid-column:span 2; }
-.calc-tab:nth-child(4) { grid-column:span 2; }
-.calc-tab:nth-child(5) { grid-column:span 2; }
+.calc-tab:nth-child(3) { grid-column:span 2; border-top:1px solid var(--dawn-overlay); }
+.calc-tab:nth-child(4) { grid-column:span 2; border-top:1px solid var(--dawn-overlay); }
+.calc-tab:nth-child(5) { grid-column:span 2; border-top:1px solid var(--dawn-overlay); }
 .calc-tab { padding:8px 14px; border:1px solid var(--dawn-hl-med); border-bottom:none; background:var(--dawn-overlay); font-family:var(--font-sans); font-size:0.78rem; font-weight:500; color:var(--dawn-subtle); cursor:pointer; transition:all 0.12s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:-2px; border-radius:6px 6px 0 0; text-align:center; }
 .calc-tab:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
 .calc-tab.active { background:var(--dawn-surface); color:var(--lyt-teal); font-weight:700; border-color:var(--dawn-hl-med); border-bottom:2px solid var(--dawn-surface); }
@@ -21,7 +21,7 @@
 .calc-panel.active { display:block; }
 
 /* ── Calc card ── */
-.calc-card { background:var(--dawn-surface); border:1px solid var(--dawn-hl-med); border-radius:10px; padding:20px 24px; margin-bottom:24px; }
+.calc-card { background:var(--dawn-surface); border:1px solid var(--dawn-hl-med); border-radius:0 0 10px 10px; padding:20px 24px; margin-bottom:24px; }
 .calc-card h3 { margin:0 0 4px; font-size:1.05rem; color:var(--dawn-text); font-weight:700; }
 .calc-desc { font-size:0.86rem; color:var(--dawn-muted); margin-bottom:18px; }
 
@@ -134,6 +134,12 @@
     flex-direction: column;
     gap: 10px;
   }
+
+  /* Taller, wider spinners for easier tapping */
+  .input-with-unit input { padding-top: 13px !important; padding-bottom: 13px !important; }
+  .num-spinner { width: 48px !important; }
+  .num-spinner button { font-size: 0.85rem; }
+  .input-unit-label { right: 52px; }
 }
 </style>
 </head>
@@ -143,7 +149,7 @@
   <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
 </div>
 <div class="mobile-overlay" id="mobileOverlay"></div>
-<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">☰</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
+<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">☰</button></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
 <div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links">
 <a href="../administrative/index.html" class="nav-link">Administrative Index</a>
 <a href="../administrative/product-receiving.html" class="nav-sub">Product & Material Receiving</a>
@@ -452,8 +458,7 @@ function el(id){ return document.getElementById(id); }
 function v(id){ var x=parseFloat(el(id).value); return x; }
 function set(id,val){ if(el(id)) el(id).textContent=val; }
 
-// ── Hold-to-repeat spinner ──
-var _spinTimer=null, _spinInterval=null;
+// ── Hold-to-repeat spinner with acceleration ──
 function doSpinStep(btn) {
   var id=btn.getAttribute('data-id'), step=parseFloat(btn.getAttribute('data-step')),
       dec=parseInt(btn.getAttribute('data-dec')), dir=parseInt(btn.getAttribute('data-dir'));
@@ -464,14 +469,6 @@ function doSpinStep(btn) {
   inp.value=Math.max(mn,Math.min(mx,parseFloat((cur+dir*step).toFixed(dec+2)))).toFixed(dec);
   inp.dispatchEvent(new Event('input',{bubbles:true}));
 }
-function spinStart(btn) {
-  doSpinStep(btn);
-  var self = btn;
-  _spinTimer=setTimeout(function(){ _spinInterval=setInterval(function(){ doSpinStep(self); },60); },400);
-}
-function spinStop(){ clearTimeout(_spinTimer); clearInterval(_spinInterval); }
-document.addEventListener('mouseup', spinStop);
-document.addEventListener('touchend', spinStop);
 
 
 // ── Bidirectional unit sync ──
@@ -774,28 +771,39 @@ document.addEventListener('DOMContentLoaded', function() {
   rf();uf();
   // Attach spinner hold listeners after DOM ready
   document.querySelectorAll('.num-spinner button').forEach(function(btn){
-    // Desktop: click for single step, mousedown hold for repeat
-    var _held = false;
-    btn.addEventListener('mousedown',function(e){
-      _held = false;
-      var self = this;
-      _spinTimer = setTimeout(function(){
-        _held = true;
-        _spinInterval = setInterval(function(){ doSpinStep(self); }, 80);
-      }, 500);
-    });
-    btn.addEventListener('click',function(e){
-      if (!_held) { doSpinStep(this); }
-      _held = false;
-    });
-    // Mobile: touchend for single tap (not touchstart), prevent context menu
-    btn.addEventListener('contextmenu',function(e){ e.preventDefault(); });
-    btn.addEventListener('touchstart',function(e){ e.preventDefault(); },{passive:false});
-    btn.addEventListener('touchend',function(e){
+    var _held = false, _timer = null;
+
+    function startAccel(self) {
+      var delay = 150;
+      function tick() {
+        doSpinStep(self);
+        delay = Math.max(40, Math.floor(delay * 0.82));
+        _timer = setTimeout(tick, delay);
+      }
+      _timer = setTimeout(function(){ _held = true; tick(); }, 400);
+    }
+    function stopAccel() { clearTimeout(_timer); _timer = null; }
+
+    // Desktop
+    btn.addEventListener('mousedown', function(e){ _held = false; startAccel(this); });
+    btn.addEventListener('mouseup',   function(){ stopAccel(); });
+    btn.addEventListener('mouseleave',function(){ stopAccel(); });
+    btn.addEventListener('click',     function(){ if (!_held) doSpinStep(this); _held = false; });
+
+    // Mobile
+    btn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+    btn.addEventListener('touchstart', function(e){
       e.preventDefault();
-      spinStop();
-      doSpinStep(this);
+      _held = false;
+      startAccel(this);
+    }, {passive:false});
+    btn.addEventListener('touchend', function(e){
+      e.preventDefault();
+      stopAccel();
+      if (!_held) doSpinStep(this);
+      _held = false;
     });
+    btn.addEventListener('touchcancel', function(){ stopAccel(); _held = false; });
   });
 });
 </script>
