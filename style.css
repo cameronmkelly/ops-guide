@@ -623,13 +623,15 @@ a.wikilink:hover { border-color: var(--lyt-teal); }
 
   /* ── Page title area ── */
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 20px;
+    padding: 14px 16px 12px;
   }
 
   .page-title { font-size: 1.4rem; }
+
+  /* ── Content area padding ── */
+  .page-content {
+    padding: 16px 16px 40px;
+  }
 
   /* ── Callouts ── */
   .callout { padding: 12px 14px; }
