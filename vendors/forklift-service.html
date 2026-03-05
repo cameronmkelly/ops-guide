@@ -2,7 +2,6 @@
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[Forklift Service Vendor] — [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../style.css">
-<script>(function(){try{var css='';if(localStorage.getItem('sidebarCollapsed')==='1'){css+='#sidebar{width:36px!important;overflow:hidden!important}';css+='.main{margin-left:36px!important;width:calc(100% - 36px)!important}';css+='#sidebar .sidebar-logo,#sidebar .sidebar-title,#sidebar .sidebar-version,#sidebar #sidebar-nav{display:none!important}';css+='#sidebar .sidebar-toggle{width:100%!important;border:none!important;border-radius:0!important;padding:16px 0!important;text-align:center!important;font-size:0!important}';css+='#sidebar .sidebar-header{justify-content:center!important;padding:0!important}';}var s=JSON.parse(localStorage.getItem('ops-guide-nav-state')||'null');if(s)['admin','chem','equip','sops','tools','vend'].forEach(function(k){if(s['s:'+k]){css+='.nav-section[data-section="'+k+'"].collapsed .nav-section-links{display:block!important}';css+='.nav-section[data-section="'+k+'"].collapsed .nav-section-label::after{transform:none!important}';}});if(css){var el=document.createElement('style');el.id='_np';el.textContent=css;document.head.appendChild(el);}}catch(e){}})();</script><script>
 document.addEventListener('DOMContentLoaded', function() {
 
   // ── Nav state persistence ──
@@ -49,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   restoreNavState();
-  var _np=document.getElementById('_np');if(_np)_np.remove();
 
   // ── Sidebar collapse ──
     // ── Favorites ──
@@ -127,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -271,4 +270,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   })();
 </script>
+<script src="../pjax.js"></script>
 </body></html>

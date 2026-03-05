@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -173,4 +174,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <a href="proofing-concepts.html" class="index-card"><div class="index-card-type">Reference</div><div class="index-card-title">Proofing Concepts</div><div class="index-card-desc">Scientific principles behind spirit dilution, including louching, saponification, and risk zones by ABV range.</div></a>
 </div></div>
 </div>
+<script src="../../pjax.js"></script>
 </body></html>

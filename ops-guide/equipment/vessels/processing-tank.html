@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -243,4 +244,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <a href="../../vendors/equipment-fabricator.html" class="related-card"><div class="related-card-type">Vendor</div><div class="related-card-title">Equipment Fabricator</div></a>
 </div></div></div>
 </div>
+<script src="../../../pjax.js"></script>
 </body></html>

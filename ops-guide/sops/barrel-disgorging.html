@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head>
@@ -249,5 +250,6 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
+<script src="../../pjax.js"></script>
 </body>
 </html>

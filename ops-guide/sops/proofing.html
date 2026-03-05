@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -206,4 +207,5 @@ document.addEventListener('DOMContentLoaded', function() {
     <a href="../tools/proofing-concepts.html" class="related-card"><div class="related-card-type">Reference</div><div class="related-card-title">Proofing Concepts</div></a>
   </div></div>
 </div></div>
+<script src="../../pjax.js"></script>
 </body></html>

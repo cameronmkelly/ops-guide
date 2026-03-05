@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -212,4 +213,5 @@ document.addEventListener('DOMContentLoaded', function() {
     <a href="../equipment/utilities/ro-water.html" class="related-card"><div class="related-card-type">Utility</div><div class="related-card-title">RO Water System</div></a>
   </div></div>
 </div></div>
+<script src="../../pjax.js"></script>
 </body></html>

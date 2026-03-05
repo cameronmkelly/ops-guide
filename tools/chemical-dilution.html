@@ -5,146 +5,133 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Facility Calculators — [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../style.css">
-<script>(function(){try{var css='';if(localStorage.getItem('sidebarCollapsed')==='1'){css+='#sidebar{width:36px!important;overflow:hidden!important}';css+='.main{margin-left:36px!important;width:calc(100% - 36px)!important}';css+='#sidebar .sidebar-logo,#sidebar .sidebar-title,#sidebar .sidebar-version,#sidebar #sidebar-nav{display:none!important}';css+='#sidebar .sidebar-toggle{width:100%!important;border:none!important;border-radius:0!important;padding:16px 0!important;text-align:center!important;font-size:0!important}';css+='#sidebar .sidebar-header{justify-content:center!important;padding:0!important}';}var s=JSON.parse(localStorage.getItem('ops-guide-nav-state')||'null');if(s)['admin','chem','equip','sops','tools','vend'].forEach(function(k){if(s['s:'+k]){css+='.nav-section[data-section="'+k+'"].collapsed .nav-section-links{display:block!important}';css+='.nav-section[data-section="'+k+'"].collapsed .nav-section-label::after{transform:none!important}';}});if(css){var el=document.createElement('style');el.id='_np';el.textContent=css;document.head.appendChild(el);}}catch(e){}})();</script>
-<style>
-/* ── Calc tabs — two fixed rows ── */
-.page-content { padding-left:24px !important; padding-right:24px !important; }
-.calc-tabs { display:grid; grid-template-columns:repeat(6, 1fr); grid-template-rows:auto auto; gap:0; margin:0 -60px 0; padding:0 60px; border-bottom:2px solid var(--dawn-base); }
-.calc-tab:nth-child(1) { grid-column:span 3; }
-.calc-tab:nth-child(2) { grid-column:span 3; }
-.calc-tab:nth-child(3) { grid-column:span 2; border-top:1px solid var(--dawn-overlay); }
-.calc-tab:nth-child(4) { grid-column:span 2; border-top:1px solid var(--dawn-overlay); }
-.calc-tab:nth-child(5) { grid-column:span 2; border-top:1px solid var(--dawn-overlay); }
-.calc-tab { padding:8px 14px; border:1px solid var(--dawn-hl-med); border-bottom:none; background:var(--dawn-overlay); font-family:var(--font-sans); font-size:0.78rem; font-weight:500; color:var(--dawn-subtle); cursor:pointer; transition:all 0.12s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:-2px; border-radius:6px 6px 0 0; text-align:center; }
-.calc-tab:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
-.calc-tab.active { background:var(--dawn-surface); color:var(--lyt-teal); font-weight:700; border-color:var(--dawn-hl-med); border-bottom:2px solid var(--dawn-surface); }
-.calc-panel { display:none; }
-.calc-panel.active { display:block; }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
 
-/* ── Calc card ── */
-.calc-card { background:var(--dawn-surface); border:1px solid var(--dawn-hl-med); border-radius:0 0 10px 10px; padding:20px 24px; margin-bottom:24px; }
-.calc-card h3 { margin:0 0 4px; font-size:1.05rem; color:var(--dawn-text); font-weight:700; }
-.calc-desc { font-size:0.86rem; color:var(--dawn-muted); margin-bottom:18px; }
-
-/* ── Input fields — grid layout, consistent heights ── */
-.field-row { display:grid; grid-template-columns:repeat(auto-fill, 180px); gap:14px 24px; margin-bottom:16px; }
-.field-row.three { grid-template-columns:repeat(auto-fill, 160px); }
-.field-group { display:flex; flex-direction:column; gap:5px; }
-.field-group.wide { grid-column:span 2; }
-.field-group label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--dawn-subtle); }
-.field-group input, .field-group select { padding:9px 40px 9px 12px; border:1.5px solid var(--dawn-hl-med); border-radius:6px; font-size:0.92rem; background:white; color:var(--dawn-text); font-family:var(--font-body); transition:border-color 0.15s; width:100%; }
-/* Always-visible bigger spinners */
-.field-group input[type=number] { -moz-appearance:textfield; appearance:textfield; position:relative; }
-.num-wrap { position:relative; display:flex; }
-.num-wrap input[type=number] { width:100%; padding-right:32px; -moz-appearance:textfield; }
-.num-wrap input[type=number]::-webkit-inner-spin-button,
-.num-wrap input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
-.num-spinner { position:absolute; right:0; top:0; bottom:0; width:36px; display:flex; flex-direction:column; border-left:1.5px solid var(--dawn-hl-med); overflow:hidden; border-radius:0 6px 6px 0; }
-.num-spinner button { flex:1; background:white; border:none; cursor:pointer; font-size:0.7rem; color:var(--dawn-subtle); line-height:1; transition:background 0.1s; padding:0; min-height:22px; touch-action:manipulation; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
-.num-spinner button:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
-.num-spinner button:active { background:var(--dawn-hl-med); }
-.field-group input:focus, .field-group select:focus { outline:none; border-color:var(--lyt-teal); box-shadow:0 0 0 3px rgba(26,125,164,0.1); }
-.field-hint { font-size:0.7rem; color:var(--dawn-muted); }
-
-/* Vessel presets */
-.preset-section { margin-bottom:18px; }
-.preset-section-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:var(--dawn-muted); margin-bottom:6px; }
-.preset-group { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
-.preset { padding:5px 13px; border-radius:20px; border:1.5px solid var(--dawn-hl-med); background:white; font-size:0.76rem; color:var(--dawn-subtle); cursor:pointer; transition:all 0.15s; font-family:var(--font-body); font-weight:500; }
-.preset:hover { border-color:var(--lyt-teal); color:var(--lyt-teal); background:rgba(26,125,164,0.04); }
-.preset.on { background:var(--lyt-teal); border-color:var(--lyt-teal); color:white; }
-.preset.vessel { border-color:var(--dawn-pine); color:var(--dawn-pine); }
-.preset.vessel:hover, .preset.vessel.on { background:var(--dawn-pine); border-color:var(--dawn-pine); color:white; }
-
-/* Results table */
-.result-box { background:var(--dawn-overlay); border:1px solid var(--dawn-hl-med); border-radius:8px; overflow:hidden; margin-top:16px; }
-.result-box-head { background:var(--dawn-hl-med); padding:9px 16px; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--dawn-subtle); }
-.result-table { width:100%; border-collapse:collapse; }
-.result-table td { padding:8px 16px; border-bottom:1px solid var(--dawn-hl-low); font-size:0.88rem; }
-.result-table tr:last-child td { border-bottom:none; }
-.result-table td:first-child { color:var(--dawn-subtle); width:55%; }
-.result-table td:last-child { font-family:var(--font-mono); font-weight:700; color:var(--dawn-text); text-align:right; }
-.result-table tr.result-empty td:last-child { color:var(--dawn-muted); font-weight:400; font-family:var(--font-body); }
-.result-table tr.result-hidden { display:none; }
-
-.fill-wrap { padding:8px 16px 12px; border-top:1px solid var(--dawn-hl-low); }
-.fill-track { background:var(--dawn-hl-med); border-radius:4px; height:10px; overflow:hidden; margin-bottom:4px; }
-.fill-bar { height:100%; border-radius:4px; transition:width 0.4s ease, background 0.3s ease; width:0%; background:var(--dawn-pine); }
-.fill-label { font-size:0.7rem; color:var(--dawn-muted); }
-
-.instructions { background:rgba(40,105,131,0.06); border:1px solid rgba(40,105,131,0.2); border-radius:6px; padding:12px 16px; font-size:0.83rem; color:var(--dawn-subtle); line-height:1.7; margin-bottom:16px; }
-.instructions strong { color:var(--dawn-pine); }
-
-.unit-pair { display:grid; grid-template-columns:repeat(auto-fill, 180px); gap:14px 24px; }
-.unit-pair .field-group input { padding:9px 32px 9px 12px; }
-
-/* ── Calc inputs: groups side-by-side on wide, stacked on narrow ── */
-.calc-input-stack { display:flex; flex-direction:column; margin-bottom:8px; }
-.calc-input-row { display:flex; flex-wrap:wrap; gap:8px; }
-.calc-input-row .input-with-unit { width:150px; }
-
-/* ── Input with embedded unit label ── */
-.input-group { display:flex; flex-direction:column; gap:5px; }
-.input-group-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--dawn-subtle); }
-.input-with-unit { position:relative; display:flex; align-items:center; }
-.input-with-unit input { width:100%; padding:9px 58px 9px 12px; border:1.5px solid var(--dawn-hl-med); border-radius:6px; font-size:0.92rem; background:white; color:var(--dawn-text); -moz-appearance:textfield; appearance:textfield; }
-.input-with-unit input::-webkit-inner-spin-button,
-.input-with-unit input::-webkit-outer-spin-button { -webkit-appearance:none; }
-.input-with-unit input:focus { outline:none; border-color:var(--lyt-teal); box-shadow:0 0 0 3px rgba(26,125,164,0.1); }
-.input-unit-label { position:absolute; right:36px; font-size:0.68rem; font-weight:600; color:var(--dawn-muted); letter-spacing:0.02em; text-transform:uppercase; pointer-events:none; white-space:nowrap; max-width:44px; overflow:hidden; text-overflow:clip; }
-.input-with-unit .num-spinner { position:absolute; right:0; top:0; bottom:0; width:32px; display:flex; flex-direction:column; border-left:1.5px solid var(--dawn-hl-med); overflow:hidden; border-radius:0 6px 6px 0; }
-.input-with-unit .num-spinner button { flex:1; background:white; border:none; cursor:pointer; font-size:0.65rem; color:var(--dawn-subtle); line-height:1; transition:background 0.1s; padding:0; min-height:20px; touch-action:manipulation; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
-.input-with-unit .num-spinner button:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
-.input-with-unit .num-spinner button:active { background:var(--dawn-hl-med); }
-.input-row-note { font-weight:400; text-transform:none; letter-spacing:0; color:var(--dawn-muted); font-size:0.65rem; }
-.input-row-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:var(--dawn-muted); margin-bottom:6px; }
-
-.dosing-ref-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:6px; }
-.dosing-ref-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin:8px 0 0; min-width:480px; }
-.dosing-ref-table th { background:var(--dawn-overlay); text-align:left; font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--dawn-subtle); padding:7px 14px; border-bottom:1px solid var(--dawn-hl-med); }
-.dosing-ref-table td { padding:8px 14px; border-bottom:1px solid var(--dawn-hl-low); vertical-align:top; color:var(--dawn-text); }
-.dosing-ref-table tr:last-child td { border-bottom:none; }
-.dosing-ref-table td:first-child { font-weight:600; }
-.dosing-ref-table td a { color:var(--lyt-link); text-decoration:none; }
-.dosing-ref-table td a:hover { text-decoration:underline; }
-
-@media (max-width: 768px) {
-  /* Fix page-content top padding (left/right stay at 24px via !important above) */
-  .page-content { padding-top: 12px !important; }
-
-  /* Fix calc-tabs: match the 24px page-content padding so tabs are flush edge-to-edge */
-  .calc-tabs {
-    margin: 0 -24px;
-    padding: 0 3px;
-    gap: 0;
+  // ── Nav state persistence ──
+  var NAV_STATE_KEY = 'ops-guide-nav-state';
+  function saveNavState() {
+    var state = {};
+    document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+      state['s:' + s.getAttribute('data-section')] = !s.classList.contains('collapsed');
+    });
+    document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+      state['f:' + i] = !f.classList.contains('collapsed');
+    });
+    localStorage.setItem(NAV_STATE_KEY, JSON.stringify(state));
+  }
+  function restoreNavState() {
+    try {
+      var state = JSON.parse(localStorage.getItem(NAV_STATE_KEY));
+      if (!state) return;
+      document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+        var key = 's:' + s.getAttribute('data-section');
+        if (key in state) s.classList.toggle('collapsed', !state[key]);
+      });
+      document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+        var key = 'f:' + i;
+        if (key in state) f.classList.toggle('collapsed', !state[key]);
+      });
+    } catch(e) {}
   }
 
-  /* Allow tab labels to wrap; keep bold always to prevent reflow on active/inactive state change */
-  .calc-tab {
-    white-space: normal;
-    text-overflow: clip;
-    overflow: visible;
-    line-height: 1.3;
-    padding: 14px 6px;
-    font-weight: 700;
+  // ── Section collapse ──
+  document.querySelectorAll('.nav-section-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+      saveNavState();
+    });
+  });
+
+  // ── Folder collapse ──
+  document.querySelectorAll('.nav-folder-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+      saveNavState();
+    });
+  });
+
+  restoreNavState();
+
+  // ── Favorites ──
+  var FAVS_KEY = 'ops-guide-favorites';
+
+  function getFavs() {
+    try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function saveFavs(favs) {
+    localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
   }
 
-  /* input-row used in IBC / processing / flow sections */
-  .input-row {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  function renderFavs() {
+    var favs = getFavs();
+    var list = document.getElementById('favoritesList');
+    var section = document.getElementById('favoritesSection');
+    if (!list) return;
+    list.innerHTML = '';
+    if (favs.length === 0) {
+      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';
+      if (section) section.classList.add('collapsed');
+      return;
+    }
+    if (section) section.classList.remove('collapsed');
+    favs.forEach(function(fav) {
+      var row = document.createElement('div');
+      row.className = 'nav-fav-item';
+      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a>' +
+        '<button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">\u2715</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.nav-fav-remove').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var url = this.getAttribute('data-url');
+        var favs = getFavs().filter(function(f) { return f.url !== url; });
+        saveFavs(favs);
+        renderFavs();
+        updateFavBtn();
+      });
+    });
   }
 
-  /* Taller, wider spinners for easier tapping */
-  .input-with-unit input { padding-top: 13px !important; padding-bottom: 13px !important; }
-  .num-spinner { width: 48px !important; }
-  .num-spinner button { font-size: 0.85rem; }
-  .input-unit-label { right: 52px; }
-}
-</style>
+  function updateFavBtn() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var favs = getFavs();
+    var isFav = favs.some(function(f) { return f.url === btn.getAttribute('data-url'); });
+    btn.classList.toggle('fav-active', isFav);
+    btn.querySelector('.fav-star').textContent = isFav ? '\u2605' : '\u2606';
+    btn.querySelector('.fav-label').textContent = isFav ? 'Pinned' : 'Pin';
+  }
+
+  function toggleFav() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var favs = getFavs();
+    var url = btn.getAttribute('data-url');
+    var title = btn.getAttribute('data-title');
+    var idx = favs.findIndex(function(f) { return f.url === url; });
+    if (idx >= 0) {
+      favs.splice(idx, 1);
+    } else {
+      favs.push({ url: url, title: title });
+    }
+    saveFavs(favs);
+    renderFavs();
+    updateFavBtn();
+  }
+
+  var favBtn = document.getElementById('favBtn');
+  if (favBtn) favBtn.addEventListener('click', toggleFav);
+
+  renderFavs();
+  updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
+});
+</script>
 </head>
-<body>
+<body class="calc-page">
 <div class="mobile-header">
   <span class="mobile-header-title">Operations Guide</span>
   <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
@@ -446,8 +433,6 @@
 
 
   </div>
-</div>
-
 <script>
 function showCalc(name, btn) {
   document.querySelectorAll('.calc-panel').forEach(function(p){ p.classList.remove('active'); });
@@ -747,57 +732,8 @@ function calcFlow(){
   else el('f-time-row').classList.add('result-hidden');
 }
 
-// ── Sidebar / Favorites ──
-document.addEventListener('DOMContentLoaded', function() {
-  var NAV_STATE_KEY = 'ops-guide-nav-state';
-  function saveNavState() {
-    var state = {};
-    document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
-      state['s:' + s.getAttribute('data-section')] = !s.classList.contains('collapsed');
-    });
-    document.querySelectorAll('.nav-folder').forEach(function(f, i) {
-      state['f:' + i] = !f.classList.contains('collapsed');
-    });
-    localStorage.setItem(NAV_STATE_KEY, JSON.stringify(state));
-  }
-  function restoreNavState() {
-    try {
-      var state = JSON.parse(localStorage.getItem(NAV_STATE_KEY));
-      if (!state) return;
-      document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
-        var key = 's:' + s.getAttribute('data-section');
-        if (key in state) s.classList.toggle('collapsed', !state[key]);
-      });
-      document.querySelectorAll('.nav-folder').forEach(function(f, i) {
-        var key = 'f:' + i;
-        if (key in state) f.classList.toggle('collapsed', !state[key]);
-      });
-    } catch(e) {}
-  }
-  document.querySelectorAll('.nav-section-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');saveNavState();});});
-  document.querySelectorAll('.nav-folder-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');saveNavState();});});
-  restoreNavState();
-  var _np=document.getElementById('_np');if(_np)_np.remove();
-  var tog=el('sidebarToggle'),sb=el('sidebar'),mn=document.querySelector('.main');
-  var FK='ops-guide-favorites';
-  function gf(){try{return JSON.parse(localStorage.getItem(FK))||[];}catch(e){return[];}}
-    function sf(f){localStorage.setItem(FK,JSON.stringify(f));}
-  function rf(){
-    var f=gf(),l=el('favoritesList'),s=el('favoritesSection');
-    if(!l)return; l.innerHTML='';
-    if(f.length===0){l.innerHTML='<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';if(s)s.classList.add('collapsed');return;}
-    if(s)s.classList.remove('collapsed');
-    var rp=document.getElementById('sidebar').getAttribute('data-root')||'';
-    f.forEach(function(fav){var r=document.createElement('div');r.className='nav-fav-item';
-      r.innerHTML='<a href="'+rp+fav.url+'">'+fav.title+'</a><button class="nav-fav-remove" data-url="'+fav.url+'" title="Remove">✕</button>';
-      l.appendChild(r);});
-    l.querySelectorAll('.nav-fav-remove').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();var u=this.getAttribute('data-url');sf(gf().filter(function(x){return x.url!==u;}));rf();uf();});});
-  }
-  function uf(){var b=el('favBtn');if(!b)return;var f=gf(),u=b.getAttribute('data-url'),is=f.some(function(x){return x.url===u;});b.classList.toggle('fav-active',is);b.querySelector('.fav-star').textContent=is?'★':'☆';b.querySelector('.fav-label').textContent=is?'Pinned':'Pin';}
-  var fb=el('favBtn');
-  if(fb)fb.addEventListener('click',function(){var b=el('favBtn'),f=gf(),u=b.getAttribute('data-url'),t=b.getAttribute('data-title'),i=f.findIndex(function(x){return x.url===u;});if(i>=0)f.splice(i,1);else f.push({url:u,title:t});sf(f);rf();uf();});
-  rf();uf();
-  // Attach spinner hold listeners after DOM ready
+
+// Re-attach spinner listeners each time this content loads
   document.querySelectorAll('.num-spinner button').forEach(function(btn){
     var _held = false, _timer = null;
 
@@ -833,8 +769,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     btn.addEventListener('touchcancel', function(){ stopAccel(); _held = false; });
   });
-});
 </script>
+</div>
+
 
 <script>
   // ── Sidebar state management ──
@@ -892,5 +829,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   })();
 </script>
+<script src="../pjax.js"></script>
 </body>
 </html>

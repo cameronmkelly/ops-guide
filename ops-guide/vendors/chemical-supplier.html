@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -188,4 +189,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <tr><td>[Date]</td><td>[Log orders, service calls, account changes here]</td></tr>
 </tbody></table></div>
 </div>
+<script src="../../pjax.js"></script>
 </body></html>

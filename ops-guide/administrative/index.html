@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -172,4 +173,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <a href="product-receiving.html" class="index-card"><div class="index-card-type">Procedure</div><div class="index-card-title">Product & Material Receiving</div><div class="index-card-desc">Inspection, logging, and storage procedures for all incoming materials including chemicals, supplies, and raw materials.</div></a>
 </div></div>
 </div>
+<script src="../../pjax.js"></script>
 </body></html>

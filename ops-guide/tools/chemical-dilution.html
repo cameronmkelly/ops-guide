@@ -5,78 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Facility Calculators — [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../style.css">
-<style>
-.calc-tabs { display:flex; gap:0; margin-bottom:0; border-bottom:2px solid var(--dawn-hl-med); }
-.calc-tab { padding:10px 22px; border:none; background:none; font-family:var(--font-heading); font-size:0.88rem; font-weight:600; color:var(--dawn-muted); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.15s; }
-.calc-tab:hover { color:var(--dawn-subtle); }
-.calc-tab.active { color:var(--lyt-teal); border-bottom-color:var(--lyt-teal); }
-.calc-panel { display:none; padding-top:24px; }
-.calc-panel.active { display:block; }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
 
-.calc-card { background:var(--dawn-surface); border:1px solid var(--dawn-hl-med); border-radius:10px; padding:24px 28px; margin-bottom:24px; }
-.calc-card h3 { margin:0 0 4px; font-size:1.05rem; color:var(--dawn-text); font-weight:700; }
-.calc-desc { font-size:0.86rem; color:var(--dawn-muted); margin-bottom:18px; }
+  // ── Nav state persistence ──
+  var NAV_STATE_KEY = 'ops-guide-nav-state';
+  function saveNavState() {
+    var state = {};
+    document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+      state['s:' + s.getAttribute('data-section')] = !s.classList.contains('collapsed');
+    });
+    document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+      state['f:' + i] = !f.classList.contains('collapsed');
+    });
+    localStorage.setItem(NAV_STATE_KEY, JSON.stringify(state));
+  }
+  function restoreNavState() {
+    try {
+      var state = JSON.parse(localStorage.getItem(NAV_STATE_KEY));
+      if (!state) return;
+      document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+        var key = 's:' + s.getAttribute('data-section');
+        if (key in state) s.classList.toggle('collapsed', !state[key]);
+      });
+      document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+        var key = 'f:' + i;
+        if (key in state) f.classList.toggle('collapsed', !state[key]);
+      });
+    } catch(e) {}
+  }
 
-.field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; margin-bottom:16px; }
-.field-row.three { grid-template-columns:1fr 1fr 1fr; }
-.field-group { display:flex; flex-direction:column; gap:5px; }
-.field-group label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--dawn-subtle); }
-.field-group input, .field-group select { padding:9px 40px 9px 12px; border:1.5px solid var(--dawn-hl-med); border-radius:6px; font-size:0.92rem; background:white; color:var(--dawn-text); font-family:var(--font-body); transition:border-color 0.15s; }
-/* Always-visible bigger spinners */
-.field-group input[type=number] { -moz-appearance:textfield; appearance:textfield; position:relative; }
-.num-wrap { position:relative; display:flex; }
-.num-wrap input[type=number] { width:100%; padding-right:32px; -moz-appearance:textfield; }
-.num-wrap input[type=number]::-webkit-inner-spin-button,
-.num-wrap input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
-.num-spinner { position:absolute; right:0; top:0; bottom:0; width:30px; display:flex; flex-direction:column; border-left:1.5px solid var(--dawn-hl-med); overflow:hidden; border-radius:0 6px 6px 0; }
-.num-spinner button { flex:1; background:white; border:none; cursor:pointer; font-size:0.65rem; color:var(--dawn-subtle); line-height:1; transition:background 0.1s; padding:0; }
-.num-spinner button:hover { background:var(--dawn-hl-low); color:var(--dawn-text); }
-.num-spinner button:active { background:var(--dawn-hl-med); }
-.field-group input:focus, .field-group select:focus { outline:none; border-color:var(--lyt-teal); box-shadow:0 0 0 3px rgba(26,125,164,0.1); }
-.field-hint { font-size:0.7rem; color:var(--dawn-muted); }
+  // ── Section collapse ──
+  document.querySelectorAll('.nav-section-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+      saveNavState();
+    });
+  });
 
-/* Vessel presets */
-.preset-section { margin-bottom:18px; }
-.preset-section-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:var(--dawn-muted); margin-bottom:6px; }
-.preset-group { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
-.preset { padding:5px 13px; border-radius:20px; border:1.5px solid var(--dawn-hl-med); background:white; font-size:0.76rem; color:var(--dawn-subtle); cursor:pointer; transition:all 0.15s; font-family:var(--font-body); font-weight:500; }
-.preset:hover { border-color:var(--lyt-teal); color:var(--lyt-teal); background:rgba(26,125,164,0.04); }
-.preset.on { background:var(--lyt-teal); border-color:var(--lyt-teal); color:white; }
-.preset.vessel { border-color:var(--dawn-pine); color:var(--dawn-pine); }
-.preset.vessel:hover, .preset.vessel.on { background:var(--dawn-pine); border-color:var(--dawn-pine); color:white; }
+  // ── Folder collapse ──
+  document.querySelectorAll('.nav-folder-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+      saveNavState();
+    });
+  });
 
-/* Results table */
-.result-box { background:var(--dawn-overlay); border:1px solid var(--dawn-hl-med); border-radius:8px; overflow:hidden; margin-top:16px; }
-.result-box-head { background:var(--dawn-hl-med); padding:9px 16px; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--dawn-subtle); }
-.result-table { width:100%; border-collapse:collapse; }
-.result-table td { padding:8px 16px; border-bottom:1px solid var(--dawn-hl-low); font-size:0.88rem; }
-.result-table tr:last-child td { border-bottom:none; }
-.result-table td:first-child { color:var(--dawn-subtle); width:55%; }
-.result-table td:last-child { font-family:var(--font-mono); font-weight:700; color:var(--dawn-text); text-align:right; }
-.result-table tr.result-empty td:last-child { color:var(--dawn-muted); font-weight:400; font-family:var(--font-body); }
-.result-table tr.result-hidden { display:none; }
+  restoreNavState();
 
-.fill-wrap { padding:8px 16px 12px; border-top:1px solid var(--dawn-hl-low); }
-.fill-track { background:var(--dawn-hl-med); border-radius:4px; height:10px; overflow:hidden; margin-bottom:4px; }
-.fill-bar { height:100%; border-radius:4px; transition:width 0.4s ease, background 0.3s ease; width:0%; background:var(--dawn-pine); }
-.fill-label { font-size:0.7rem; color:var(--dawn-muted); }
-
-.instructions { background:rgba(40,105,131,0.06); border:1px solid rgba(40,105,131,0.2); border-radius:6px; padding:12px 16px; font-size:0.83rem; color:var(--dawn-subtle); line-height:1.7; margin-bottom:16px; }
-.instructions strong { color:var(--dawn-pine); }
-
-.unit-pair { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; }
-.unit-pair .field-group input { padding:9px 32px 9px 12px; }
-
-.dosing-ref-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin:8px 0 0; border-radius:6px; overflow:hidden; }
-.dosing-ref-table th { background:var(--dawn-overlay); text-align:left; font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--dawn-subtle); padding:7px 14px; border-bottom:1px solid var(--dawn-hl-med); }
-.dosing-ref-table td { padding:8px 14px; border-bottom:1px solid var(--dawn-hl-low); vertical-align:top; color:var(--dawn-text); }
-.dosing-ref-table tr:last-child td { border-bottom:none; }
-.dosing-ref-table td:first-child { font-weight:600; }
-.dosing-ref-table td a { color:var(--lyt-link); text-decoration:none; }
-.dosing-ref-table td a:hover { text-decoration:underline; }
-</style>
+  // ── Favorites ──
+  var FAVS_KEY = 'ops-guide-favorites';
+  function getFavs() {
+    try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function saveFavs(favs) { localStorage.setItem(FAVS_KEY, JSON.stringify(favs)); }
+  function renderFavs() {
+    var favs = getFavs(), list = document.getElementById('favoritesList'), section = document.getElementById('favoritesSection');
+    if (!list) return;
+    list.innerHTML = '';
+    if (favs.length === 0) { list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>'; if (section) section.classList.add('collapsed'); return; }
+    if (section) section.classList.remove('collapsed');
+    var rp = document.getElementById('sidebar').getAttribute('data-root') || '';
+    favs.forEach(function(fav) {
+      var row = document.createElement('div'); row.className = 'nav-fav-item';
+      row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a><button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">✕</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.nav-fav-remove').forEach(function(btn) {
+      btn.addEventListener('click', function(e) { e.preventDefault(); var url = this.getAttribute('data-url'); saveFavs(getFavs().filter(function(f){return f.url!==url;})); renderFavs(); updateFavBtn(); });
+    });
+  }
+  function updateFavBtn() {
+    var btn = document.getElementById('favBtn'); if (!btn) return;
+    var isFav = getFavs().some(function(f) { return f.url === btn.getAttribute('data-url'); });
+    btn.classList.toggle('fav-active', isFav);
+    btn.querySelector('.fav-star').textContent = isFav ? '★' : '☆';
+    btn.querySelector('.fav-label').textContent = isFav ? 'Pinned' : 'Pin';
+  }
+  function toggleFav() {
+    var btn = document.getElementById('favBtn'); if (!btn) return;
+    var favs = getFavs(), url = btn.getAttribute('data-url'), title = btn.getAttribute('data-title');
+    var idx = favs.findIndex(function(f) { return f.url === url; });
+    if (idx >= 0) favs.splice(idx, 1); else favs.push({ url: url, title: title });
+    saveFavs(favs); renderFavs(); updateFavBtn();
+  }
+  var favBtn = document.getElementById('favBtn');
+  if (favBtn) favBtn.addEventListener('click', toggleFav);
+  renderFavs(); updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
+});
+</script>
 </head>
-<body>
+<body class="calc-page">
 <nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">◀</button></div><div class="nav-home-row"><a href="../index.html" class="nav-link">Home</a></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">★ Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the ★ on any page</div></div></div>
 <div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links">
 <a href="../administrative/index.html" class="nav-link">Administrative Index</a>
@@ -361,9 +382,7 @@
 
   </div>
 </div>
-
 <script>
-function showCalc(name, btn) {
   document.querySelectorAll('.calc-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.calc-tab').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('calc-'+name).classList.add('active');
@@ -639,36 +658,14 @@ function calcFlow(){
   else el('f-time-row').classList.add('result-hidden');
 }
 
-// ── Sidebar / Favorites ──
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.nav-section-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');});});
-  document.querySelectorAll('.nav-folder-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');});});
-  var tog=el('sidebarToggle'),sb=el('sidebar'),mn=document.querySelector('.main');
-  if(tog)tog.addEventListener('click',function(){sb.classList.toggle('sidebar-collapsed');mn.classList.toggle('sidebar-collapsed');tog.textContent=sb.classList.contains('sidebar-collapsed')?'▶':'◀';});
-  var FK='ops-guide-favorites';
-  function gf(){try{return JSON.parse(localStorage.getItem(FK))||[];}catch(e){return[];}}
-  function sf(f){localStorage.setItem(FK,JSON.stringify(f));}
-  function rf(){
-    var f=gf(),l=el('favoritesList'),s=el('favoritesSection');
-    if(!l)return; l.innerHTML='';
-    if(f.length===0){l.innerHTML='<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';if(s)s.classList.add('collapsed');return;}
-    if(s)s.classList.remove('collapsed');
-    var rp=document.getElementById('sidebar').getAttribute('data-root')||'';
-    f.forEach(function(fav){var r=document.createElement('div');r.className='nav-fav-item';
-      r.innerHTML='<a href="'+rp+fav.url+'">'+fav.title+'</a><button class="nav-fav-remove" data-url="'+fav.url+'" title="Remove">✕</button>';
-      l.appendChild(r);});
-    l.querySelectorAll('.nav-fav-remove').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();var u=this.getAttribute('data-url');sf(gf().filter(function(x){return x.url!==u;}));rf();uf();});});
-  }
-  function uf(){var b=el('favBtn');if(!b)return;var f=gf(),u=b.getAttribute('data-url'),is=f.some(function(x){return x.url===u;});b.classList.toggle('fav-active',is);b.querySelector('.fav-star').textContent=is?'★':'☆';b.querySelector('.fav-label').textContent=is?'Pinned':'Pin';}
-  var fb=el('favBtn');
-  if(fb)fb.addEventListener('click',function(){var b=el('favBtn'),f=gf(),u=b.getAttribute('data-url'),t=b.getAttribute('data-title'),i=f.findIndex(function(x){return x.url===u;});if(i>=0)f.splice(i,1);else f.push({url:u,title:t});sf(f);rf();uf();});
-  rf();uf();
-  // Attach spinner hold listeners after DOM ready
-  document.querySelectorAll('.num-spinner button').forEach(function(btn){
-    btn.addEventListener('mousedown',function(e){e.preventDefault();spinStart(this);});
-    btn.addEventListener('touchstart',function(e){e.preventDefault();spinStart(this);},{passive:false});
-  });
+
+// Re-attach spinner listeners each time this content loads
+document.querySelectorAll('.num-spinner button').forEach(function(btn) {
+  btn.addEventListener('mousedown', function(e){ e.preventDefault(); spinStart(this); });
+  btn.addEventListener('touchstart', function(e){ e.preventDefault(); spinStart(this); }, {passive:false});
 });
 </script>
+
+<script src="../../pjax.js"></script>
 </body>
 </html>

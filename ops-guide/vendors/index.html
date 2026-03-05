@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -175,4 +176,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <a href="forklift-service.html" class="index-card"><div class="index-card-type">Service</div><div class="index-card-title">Forklift Service</div><div class="index-card-desc">Forklift maintenance, repair, and battery service.</div></a>
 </div></div>
 </div>
+<script src="../../pjax.js"></script>
 </body></html>

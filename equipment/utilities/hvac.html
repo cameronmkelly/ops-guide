@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   restoreNavState();
-  var _np=document.getElementById('_np');if(_np)_np.remove();
 
   // ── Sidebar collapse ──
     // ── Favorites ──
@@ -126,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -275,4 +275,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   })();
 </script>
+<script src="../../pjax.js"></script>
 </body></html>

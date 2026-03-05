@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -182,4 +183,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <li>Incoming pH is used as the benchmark for CIP rinse verification (target: match incoming pH at final drain)</li>
 </ul></div>
 </div>
+<script src="../../../pjax.js"></script>
 </body></html>

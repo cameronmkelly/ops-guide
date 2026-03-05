@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -185,4 +186,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <li>Annually: have hydraulic seals inspected if slow descent or leak observed.</li>
 </ul></div>
 </div>
+<script src="../../../pjax.js"></script>
 </body></html>

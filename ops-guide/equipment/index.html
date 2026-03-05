@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -193,4 +194,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <a href="lab-bottling/bottle-filler.html" class="index-card"><div class="index-card-type">Bottling</div><div class="index-card-title">Manual Bottle Filler</div><div class="index-card-desc">Gravity-feed multi-spout filler for production bottling runs.</div></a>
 </div></div>
 </div>
+<script src="../../pjax.js"></script>
 </body></html>

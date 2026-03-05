@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderFavs();
   updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
@@ -176,4 +177,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <a href="sanitizer.html" class="index-card"><div class="index-card-type">Sanitizer</div><div class="index-card-title">No-Rinse Sanitizer</div><div class="index-card-desc">Low-concentration sanitizer for food contact surfaces. Applied after CIP rinsing — no water rinse required.</div></a>
 </div></div>
 </div>
+<script src="../../pjax.js"></script>
 </body></html>
