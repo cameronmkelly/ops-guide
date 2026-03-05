@@ -210,7 +210,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Apply saved state immediately (no flash)
-    applyState(isCollapsed());
+    // On mobile, sidebar always starts hidden (controlled by mobile-open class)
+    if (window.innerWidth > 768) { applyState(isCollapsed()); }
 
     // Wire up desktop hamburger
     var tog = document.getElementById('sidebarToggle');
