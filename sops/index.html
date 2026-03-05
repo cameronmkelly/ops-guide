@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SOP Index — [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../style.css">
+<script>document.documentElement.classList.add('nav-loading');</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -52,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   restoreNavState();
+  document.documentElement.classList.remove('nav-loading');
 
   // ── Sidebar collapse ──
     // ── Favorites ──

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Facility Calculators — [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../style.css">
+<script>document.documentElement.classList.add('nav-loading');</script>
 <style>
 /* ── Calc tabs — two fixed rows ── */
 .page-content { padding-left:24px !important; padding-right:24px !important; }
@@ -776,6 +777,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.nav-section-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');saveNavState();});});
   document.querySelectorAll('.nav-folder-label').forEach(function(l){l.addEventListener('click',function(){this.parentElement.classList.toggle('collapsed');saveNavState();});});
   restoreNavState();
+  document.documentElement.classList.remove('nav-loading');
   var tog=el('sidebarToggle'),sb=el('sidebar'),mn=document.querySelector('.main');
   var FK='ops-guide-favorites';
   function gf(){try{return JSON.parse(localStorage.getItem(FK))||[];}catch(e){return[];}}

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chemical Index — [Company Name] Operations Guide</title>
-<link rel="stylesheet" href="../style.css"><script>
+<link rel="stylesheet" href="../style.css">
+<script>document.documentElement.classList.add('nav-loading');</script><script>
 document.addEventListener('DOMContentLoaded', function() {
 
   // ── Nav state persistence ──
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   restoreNavState();
+  document.documentElement.classList.remove('nav-loading');
 
   // ── Sidebar collapse ──
     // ── Favorites ──
