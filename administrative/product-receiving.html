@@ -228,7 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Apply saved state immediately (no flash)
     // On mobile, sidebar always starts hidden (controlled by mobile-open class)
+    sb.style.transition = 'none'; mn.style.transition = 'none';
     if (window.innerWidth > 768) { applyState(isCollapsed()); }
+    requestAnimationFrame(function() { requestAnimationFrame(function() { sb.style.transition = ''; mn.style.transition = ''; }); });
 
     // Wire up desktop hamburger
     var tog = document.getElementById('sidebarToggle');
