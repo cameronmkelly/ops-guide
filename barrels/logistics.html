@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vendor Index — [Company Name] Operations Guide</title>
+<title>Barrel Logistics & Transport &#8212; [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../style.css">
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
-  // ── Nav state persistence ──
   var NAV_STATE_KEY = 'ops-guide-nav-state';
   function saveNavState() {
     var state = {};
@@ -31,37 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     } catch(e) {}
   }
-
-  // ── Section collapse ──
   document.querySelectorAll('.nav-section-label').forEach(function(label) {
-    label.addEventListener('click', function() {
-      this.parentElement.classList.toggle('collapsed');
-      saveNavState();
-    });
+    label.addEventListener('click', function() { this.parentElement.classList.toggle('collapsed'); saveNavState(); });
   });
-
-  // ── Folder collapse ──
   document.querySelectorAll('.nav-folder-label').forEach(function(label) {
-    label.addEventListener('click', function() {
-      this.parentElement.classList.toggle('collapsed');
-      saveNavState();
-    });
+    label.addEventListener('click', function() { this.parentElement.classList.toggle('collapsed'); saveNavState(); });
   });
-
   restoreNavState();
-
-  // ── Sidebar collapse ──
-    // ── Favorites ──
   var FAVS_KEY = 'ops-guide-favorites';
-
-  function getFavs() {
-    try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; }
-    catch(e) { return []; }
-  }
-  function saveFavs(favs) {
-    localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
-  }
-
+  function getFavs() { try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; } catch(e) { return []; } }
+  function saveFavs(favs) { localStorage.setItem(FAVS_KEY, JSON.stringify(favs)); }
   function renderFavs() {
     var favs = getFavs();
     var list = document.getElementById('favoritesList');
@@ -69,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!list) return;
     list.innerHTML = '';
     if (favs.length === 0) {
-      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';
+      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the &#9733; on any page</div>';
       if (section) section.classList.add('collapsed');
       return;
     }
@@ -77,69 +54,51 @@ document.addEventListener('DOMContentLoaded', function() {
     favs.forEach(function(fav) {
       var row = document.createElement('div');
       row.className = 'nav-fav-item';
-      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a>' +
-        '<button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">✕</button>';
+      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a><button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">&#10005;</button>';
       list.appendChild(row);
     });
     list.querySelectorAll('.nav-fav-remove').forEach(function(btn) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         var url = this.getAttribute('data-url');
-        var favs = getFavs().filter(function(f) { return f.url !== url; });
-        saveFavs(favs);
-        renderFavs();
-        updateFavBtn();
+        saveFavs(getFavs().filter(function(f) { return f.url !== url; }));
+        renderFavs(); updateFavBtn();
       });
     });
   }
-
   function updateFavBtn() {
     var btn = document.getElementById('favBtn');
     if (!btn) return;
-    var favs = getFavs();
-    var url = window.location.pathname.split('/').pop() || 'index.html';
-    var isFav = favs.some(function(f) { return f.url === btn.getAttribute('data-url'); });
+    var isFav = getFavs().some(function(f) { return f.url === btn.getAttribute('data-url'); });
     btn.classList.toggle('fav-active', isFav);
-    btn.querySelector('.fav-star').textContent = isFav ? '★' : '☆';
+    btn.querySelector('.fav-star').textContent = isFav ? '\u2605' : '\u2606';
     btn.querySelector('.fav-label').textContent = isFav ? 'Pinned' : 'Pin';
   }
-
   function toggleFav() {
     var btn = document.getElementById('favBtn');
     if (!btn) return;
-    var favs = getFavs();
-    var url = btn.getAttribute('data-url');
-    var title = btn.getAttribute('data-title');
+    var favs = getFavs(); var url = btn.getAttribute('data-url'); var title = btn.getAttribute('data-title');
     var idx = favs.findIndex(function(f) { return f.url === url; });
-    if (idx >= 0) {
-      favs.splice(idx, 1);
-    } else {
-      favs.push({ url: url, title: title });
-    }
-    saveFavs(favs);
-    renderFavs();
-    updateFavBtn();
+    if (idx >= 0) { favs.splice(idx, 1); } else { favs.push({ url: url, title: title }); }
+    saveFavs(favs); renderFavs(); updateFavBtn();
   }
-
   var favBtn = document.getElementById('favBtn');
   if (favBtn) favBtn.addEventListener('click', toggleFav);
-
-  renderFavs();
-  updateFavBtn();
+  renderFavs(); updateFavBtn();
   window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
 <div class="mobile-header">
   <span class="mobile-header-title">Operations Guide</span>
-  <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
 </div>
 <div class="mobile-overlay" id="mobileOverlay"></div>
 <nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">&#9776;</button></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">&#9733; Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the &#9733; on any page</div></div></div><div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links"><a href="../administrative/index.html" class="nav-link">Administrative Index</a>
 <a href="../administrative/product-receiving.html" class="nav-sub">Product &amp; Material Receiving</a>
-</div></div><div class="nav-section collapsed" data-section="barrels"><div class="nav-section-label">Barrels</div><div class="nav-section-links"><a href="../barrels/index.html" class="nav-link">Barrel Index</a>
+</div></div><div class="nav-section" data-section="barrels"><div class="nav-section-label">Barrels</div><div class="nav-section-links"><a href="../barrels/index.html" class="nav-link">Barrel Index</a>
 <a href="../barrels/intake.html" class="nav-sub">Barrel Intake &amp; Receiving</a>
-<a href="../barrels/logistics.html" class="nav-sub">Barrel Logistics &amp; Transport</a>
+<a href="../barrels/logistics.html" class="nav-sub active">Barrel Logistics &amp; Transport</a>
 </div></div><div class="nav-section collapsed" data-section="chem"><div class="nav-section-label">Chemicals &amp; SDS</div><div class="nav-section-links"><a href="../chemicals/index.html" class="nav-link">Chemical Index</a>
 <a href="../chemicals/alkaline-detergent.html" class="nav-sub">Alkaline Detergent</a>
 <a href="../chemicals/citric-acid.html" class="nav-sub">Citric Acid</a>
@@ -177,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div></div><div class="nav-section collapsed" data-section="tools"><div class="nav-section-label">Tools &amp; Concepts</div><div class="nav-section-links"><a href="../tools/index.html" class="nav-link">Tools &amp; Concepts Index</a>
 <a href="../tools/chemical-dilution.html" class="nav-sub">Facility Calculators</a>
 <a href="../tools/proofing-concepts.html" class="nav-sub">Proofing Concepts</a>
-</div></div><div class="nav-section" data-section="vend"><div class="nav-section-label">Vendors</div><div class="nav-section-links"><a href="../vendors/index.html" class="nav-link active">Vendor Index</a>
+</div></div><div class="nav-section collapsed" data-section="vend"><div class="nav-section-label">Vendors</div><div class="nav-section-links"><a href="../vendors/index.html" class="nav-link">Vendor Index</a>
 <a href="../vendors/chemical-supplier.html" class="nav-sub">[Chemical Supplier]</a>
 <a href="../vendors/equipment-fabricator.html" class="nav-sub">[Equipment Fabricator]</a>
 <a href="../vendors/forklift-service.html" class="nav-sub">[Forklift Service Vendor]</a>
@@ -185,75 +144,129 @@ document.addEventListener('DOMContentLoaded', function() {
 </div></div></div></nav>
 <div class="main">
 <div class="page-header">
-  <div class="breadcrumb"><a href="../index.html">Home</a> / Vendors</div>
-  <h1 class="page-title">Vendor Index<button class="fav-btn" id="favBtn" data-title="Vendor Index" data-url="vendors/index.html"><span class="fav-star">☆</span><span class="fav-label">Pin</span></button></h1>
-  <p class="page-subtitle">Contact information, service scope, and account details for all facility vendors and service providers.</p>
+  <div class="breadcrumb"><a href="../index.html">Home</a> / <a href="../barrels/index.html">Barrels</a> / Logistics &amp; Transport</div>
+  <h1 class="page-title">Barrel Logistics &amp; Transport<button class="fav-btn" id="favBtn" data-title="Barrel Logistics & Transport" data-url="barrels/logistics.html"><span class="fav-star">&#9734;</span><span class="fav-label">Pin</span></button></h1>
+  <p class="page-subtitle">Carrier contacts, per-trailer stacking configurations, supplier programs, and storage partners.</p>
 </div>
-<div class="page-content"><p>Vendor notes are cross-linked to the equipment and chemicals they supply or service. When a piece of equipment needs service, the vendor note is the first place to look for contact information, service scope, and account details.</p>
-<div class="card-grid">
-  <a href="chemical-supplier.html" class="index-card"><div class="index-card-type">Supplier</div><div class="index-card-title">Chemical Supplier</div><div class="index-card-desc">Primary source for CIP chemicals, sanitizers, and cleaning consumables.</div></a>
-  <a href="equipment-fabricator.html" class="index-card"><div class="index-card-type">Fabricator</div><div class="index-card-title">Equipment Fabricator</div><div class="index-card-desc">Custom stainless steel vessel fabrication and modification.</div></a>
-  <a href="maintenance-service.html" class="index-card"><div class="index-card-type">Service</div><div class="index-card-title">Maintenance & Service</div><div class="index-card-desc">Preventive maintenance and repair for compressed air, water treatment, HVAC, and general mechanical systems.</div></a>
-  <a href="forklift-service.html" class="index-card"><div class="index-card-type">Service</div><div class="index-card-title">Forklift Service</div><div class="index-card-desc">Forklift maintenance, repair, and battery service.</div></a>
+<div class="page-content">
+<h2>Quick Reference: Truck Loading Configurations</h2>
+<table class="dosing-table">
+  <thead><tr><th>Configuration</th><th>Trailer Type</th><th>Barrels per Load</th><th>Est. Weight</th></tr></thead>
+  <tbody>
+    <tr><td>Full barrels (racked)</td><td>53&#x27; dry van</td><td>42 (21 racks &times; 2)</td><td>~22,000 lbs</td></tr>
+    <tr><td>Empty barrels (floor loaded)</td><td>53&#x27; dry van</td><td>88&#x2013;92</td><td>~4,000&#x2013;5,000 lbs</td></tr>
+    <tr><td>Empty barrels (palletized)</td><td>53&#x27; dry van</td><td>80</td><td>~4,500 lbs</td></tr>
+    <tr><td>Burgundy 228L (double-stack)</td><td>53&#x27; trailer</td><td>140&#x2013;160</td><td>Varies</td></tr>
+    <tr><td>Burgundy 228L (triple-stack, max)</td><td>53&#x27; trailer</td><td>Up to 260</td><td>Varies</td></tr>
+    <tr><td>Burgundy 228L (40&#x27; high cube)</td><td>40&#x27; HC container</td><td>150&#x2013;160</td><td>Varies</td></tr>
+    <tr><td>Mixed empty barrels</td><td>53&#x27; dry van</td><td>~198 (mixed 76+122)</td><td>~9,000 lbs</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-info"><div class="callout-label">Weight Limits</div>Verify legal axle weight limits for your state and route before finalizing any heavy load. A 53&#x27; trailer carrying 42 full barrels at ~22,000 lbs product weight is well within standard limits, but verify with your carrier for total vehicle weight including tractor.</div>
+
+<h2>Transport Carrier Contacts</h2>
+
+<h3>[Primary Freight Carrier]</h3>
+<table class="spec-table">
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Company</td><td>[Carrier Company Name]</td></tr>
+    <tr><td>Primary Contact</td><td>[Contact Name]</td></tr>
+    <tr><td>Email</td><td>[contact@carrier.com]</td></tr>
+    <tr><td>Phone</td><td>[XXX-XXX-XXXX]</td></tr>
+    <tr><td>Specialization</td><td>General freight, barrel transport</td></tr>
+    <tr><td>Account No.</td><td>[Account Number]</td></tr>
+    <tr><td>Notes</td><td>[Any rate agreements, preferred lanes, or special instructions]</td></tr>
+  </tbody>
+</table>
+
+<h3>[Secondary / Specialty Carrier]</h3>
+<table class="spec-table">
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Company</td><td>[Carrier Company Name]</td></tr>
+    <tr><td>Primary Contact</td><td>[Contact Name]</td></tr>
+    <tr><td>Email</td><td>[contact@carrier.com]</td></tr>
+    <tr><td>Phone</td><td>[XXX-XXX-XXXX]</td></tr>
+    <tr><td>Specialization</td><td>[e.g., Temperature-controlled, LTL, wine/spirits specialist]</td></tr>
+    <tr><td>Notes</td><td>[Rate agreements, preferred lanes]</td></tr>
+  </tbody>
+</table>
+
+<h2>Barrel Suppliers &amp; Programs</h2>
+
+<h3>[Barrel Supplier / Cooperage]</h3>
+<table class="spec-table">
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Company</td><td>[Cooperage / Barrel Broker Name]</td></tr>
+    <tr><td>Location</td><td>[City, State]</td></tr>
+    <tr><td>Primary Contact</td><td>[Contact Name]</td></tr>
+    <tr><td>Email</td><td>[contact@supplier.com]</td></tr>
+    <tr><td>Barrel Types</td><td>[e.g., New American oak 53-gal, ex-bourbon, ex-wine]</td></tr>
+    <tr><td>Current Price</td><td>[~$XX/unit — update as negotiated]</td></tr>
+    <tr><td>Active Programs</td><td>[Describe any active barrel purchase agreements or ongoing programs]</td></tr>
+    <tr><td>Notes</td><td>[Export markets served, barrel grades, lead times]</td></tr>
+  </tbody>
+</table>
+
+<h2>Storage &amp; Distribution Partners</h2>
+<table class="spec-table">
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Company</td><td>[Warehouse / Distribution Partner]</td></tr>
+    <tr><td>Address</td><td>[Address]</td></tr>
+    <tr><td>Primary Contact</td><td>[Contact Name]</td></tr>
+    <tr><td>Phone</td><td>[XXX-XXX-XXXX]</td></tr>
+    <tr><td>Services</td><td>Offsite barrel storage, temperature-controlled warehousing, contract warehousing</td></tr>
+    <tr><td>Account No.</td><td>[Account Number]</td></tr>
+  </tbody>
+</table>
+
+<h2>Activity Log</h2>
+<table class="spec-table">
+  <thead><tr><th>Date</th><th>Activity</th></tr></thead>
+  <tbody>
+    <tr><td>[YYYY-MM-DD]</td><td>[Log carrier rate changes, new programs, shipment notes here]</td></tr>
+  </tbody>
+</table>
+
+<div class="related-docs"><h2>Related Documentation</h2>
+<div class="related-grid">
+  <a href="intake.html" class="related-card"><div class="related-card-type">Operations</div><div class="related-card-title">Barrel Intake &amp; Receiving</div></a>
+  <a href="../supplies/barrel-closures.html" class="related-card"><div class="related-card-type">Supply</div><div class="related-card-title">Barrel Closure Supplies</div></a>
 </div></div>
 </div>
-
+</div>
 <script>
-  
-</script>
-<script>
-  // ── Sidebar state management ──
   (function() {
     var sb = document.getElementById('sidebar');
     var mn = document.querySelector('.main');
     if (!sb || !mn) return;
-
     function isCollapsed() { return localStorage.getItem('sidebarCollapsed') === '1'; }
-
     function applyState(collapsed) {
-      if (collapsed) {
-        sb.classList.add('sidebar-collapsed');
-        mn.classList.add('sidebar-collapsed');
-      } else {
-        sb.classList.remove('sidebar-collapsed');
-        mn.classList.remove('sidebar-collapsed');
-      }
+      if (collapsed) { sb.classList.add('sidebar-collapsed'); mn.classList.add('sidebar-collapsed'); }
+      else { sb.classList.remove('sidebar-collapsed'); mn.classList.remove('sidebar-collapsed'); }
     }
-
     function toggle() {
       var nowCollapsed = !sb.classList.contains('sidebar-collapsed');
       applyState(nowCollapsed);
       localStorage.setItem('sidebarCollapsed', nowCollapsed ? '1' : '0');
     }
-
-    // Apply saved state immediately (no flash)
-    // On mobile, sidebar always starts hidden (controlled by mobile-open class)
     sb.style.transition = 'none'; mn.style.transition = 'none';
     if (window.innerWidth > 768) { applyState(isCollapsed()); }
     requestAnimationFrame(function() { requestAnimationFrame(function() { sb.style.transition = ''; mn.style.transition = ''; }); });
-
-    // Wire up desktop hamburger
     var tog = document.getElementById('sidebarToggle');
     if (tog) tog.addEventListener('click', toggle);
-
-    // Wire up mobile hamburger
     var mobileBtn = document.getElementById('mobileMenuBtn');
     var overlay = document.getElementById('mobileOverlay');
     if (mobileBtn) {
-      mobileBtn.addEventListener('click', function() {
-        sb.classList.toggle('mobile-open');
-        if (overlay) overlay.classList.toggle('active');
-      });
+      mobileBtn.addEventListener('click', function() { sb.classList.toggle('mobile-open'); if (overlay) overlay.classList.toggle('active'); });
     }
-    if (overlay) overlay.addEventListener('click', function() {
-      sb.classList.remove('mobile-open');
-      overlay.classList.remove('active');
-    });
+    if (overlay) overlay.addEventListener('click', function() { sb.classList.remove('mobile-open'); overlay.classList.remove('active'); });
     if (sb) sb.querySelectorAll('a').forEach(function(a) {
-      a.addEventListener('click', function() {
-        sb.classList.remove('mobile-open');
-        if (overlay) overlay.classList.remove('active');
-      });
+      a.addEventListener('click', function() { sb.classList.remove('mobile-open'); if (overlay) overlay.classList.remove('active'); });
     });
   })();
 </script>

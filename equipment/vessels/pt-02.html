@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HVAC & Exhaust System — [Company Name] Operations Guide</title>
-<link rel="stylesheet" href="../../style.css"><script>
+<title>PT-02: 3,500 Gallon Processing Tank &#8212; [Company Name] Operations Guide</title>
+<link rel="stylesheet" href="../../style.css">
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-
-  // ── Nav state persistence ──
   var NAV_STATE_KEY = 'ops-guide-nav-state';
   function saveNavState() {
     var state = {};
@@ -30,37 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     } catch(e) {}
   }
-
-  // ── Section collapse ──
   document.querySelectorAll('.nav-section-label').forEach(function(label) {
-    label.addEventListener('click', function() {
-      this.parentElement.classList.toggle('collapsed');
-      saveNavState();
-    });
+    label.addEventListener('click', function() { this.parentElement.classList.toggle('collapsed'); saveNavState(); });
   });
-
-  // ── Folder collapse ──
   document.querySelectorAll('.nav-folder-label').forEach(function(label) {
-    label.addEventListener('click', function() {
-      this.parentElement.classList.toggle('collapsed');
-      saveNavState();
-    });
+    label.addEventListener('click', function() { this.parentElement.classList.toggle('collapsed'); saveNavState(); });
   });
-
   restoreNavState();
-
-  // ── Sidebar collapse ──
-    // ── Favorites ──
   var FAVS_KEY = 'ops-guide-favorites';
-
-  function getFavs() {
-    try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; }
-    catch(e) { return []; }
-  }
-  function saveFavs(favs) {
-    localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
-  }
-
+  function getFavs() { try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; } catch(e) { return []; } }
+  function saveFavs(favs) { localStorage.setItem(FAVS_KEY, JSON.stringify(favs)); }
   function renderFavs() {
     var favs = getFavs();
     var list = document.getElementById('favoritesList');
@@ -68,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!list) return;
     list.innerHTML = '';
     if (favs.length === 0) {
-      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';
+      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the &#9733; on any page</div>';
       if (section) section.classList.add('collapsed');
       return;
     }
@@ -76,62 +54,44 @@ document.addEventListener('DOMContentLoaded', function() {
     favs.forEach(function(fav) {
       var row = document.createElement('div');
       row.className = 'nav-fav-item';
-      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a>' +
-        '<button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">✕</button>';
+      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a><button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">&#10005;</button>';
       list.appendChild(row);
     });
     list.querySelectorAll('.nav-fav-remove').forEach(function(btn) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         var url = this.getAttribute('data-url');
-        var favs = getFavs().filter(function(f) { return f.url !== url; });
-        saveFavs(favs);
-        renderFavs();
-        updateFavBtn();
+        saveFavs(getFavs().filter(function(f) { return f.url !== url; }));
+        renderFavs(); updateFavBtn();
       });
     });
   }
-
   function updateFavBtn() {
     var btn = document.getElementById('favBtn');
     if (!btn) return;
-    var favs = getFavs();
-    var url = window.location.pathname.split('/').pop() || 'index.html';
-    var isFav = favs.some(function(f) { return f.url === btn.getAttribute('data-url'); });
+    var isFav = getFavs().some(function(f) { return f.url === btn.getAttribute('data-url'); });
     btn.classList.toggle('fav-active', isFav);
-    btn.querySelector('.fav-star').textContent = isFav ? '★' : '☆';
+    btn.querySelector('.fav-star').textContent = isFav ? '\u2605' : '\u2606';
     btn.querySelector('.fav-label').textContent = isFav ? 'Pinned' : 'Pin';
   }
-
   function toggleFav() {
     var btn = document.getElementById('favBtn');
     if (!btn) return;
-    var favs = getFavs();
-    var url = btn.getAttribute('data-url');
-    var title = btn.getAttribute('data-title');
+    var favs = getFavs(); var url = btn.getAttribute('data-url'); var title = btn.getAttribute('data-title');
     var idx = favs.findIndex(function(f) { return f.url === url; });
-    if (idx >= 0) {
-      favs.splice(idx, 1);
-    } else {
-      favs.push({ url: url, title: title });
-    }
-    saveFavs(favs);
-    renderFavs();
-    updateFavBtn();
+    if (idx >= 0) { favs.splice(idx, 1); } else { favs.push({ url: url, title: title }); }
+    saveFavs(favs); renderFavs(); updateFavBtn();
   }
-
   var favBtn = document.getElementById('favBtn');
   if (favBtn) favBtn.addEventListener('click', toggleFav);
-
-  renderFavs();
-  updateFavBtn();
+  renderFavs(); updateFavBtn();
   window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
 });
 </script>
 </head><body>
 <div class="mobile-header">
   <span class="mobile-header-title">Operations Guide</span>
-  <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
 </div>
 <div class="mobile-overlay" id="mobileOverlay"></div>
 <nav class="sidebar" id="sidebar" data-root="../../"><div class="sidebar-header"><a href="../../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">&#9776;</button></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">&#9733; Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the &#9733; on any page</div></div></div><div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links"><a href="../../administrative/index.html" class="nav-link">Administrative Index</a>
@@ -149,19 +109,19 @@ document.addEventListener('DOMContentLoaded', function() {
 </div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Material Handling</div><div class="nav-folder-links"><a href="../../equipment/material-handling/forklift.html" class="nav-sub">Electric Forklift</a>
 <a href="../../equipment/material-handling/pallet-jack.html" class="nav-sub">Pallet Jack</a>
 </div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Processing</div><div class="nav-folder-links"><a href="../../equipment/processing/pump-01.html" class="nav-sub">Pump-01: AODD (1&quot;)</a>
-</div></div><div class="nav-folder"><div class="nav-folder-label">Utilities</div><div class="nav-folder-links"><a href="../../equipment/utilities/city-water.html" class="nav-sub">City Water</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Utilities</div><div class="nav-folder-links"><a href="../../equipment/utilities/city-water.html" class="nav-sub">City Water</a>
 <a href="../../equipment/utilities/compressed-air.html" class="nav-sub">Compressed Air System</a>
 <a href="../../equipment/utilities/generator.html" class="nav-sub">Emergency Generator</a>
-<a href="../../equipment/utilities/hvac.html" class="nav-sub active">HVAC &amp; Exhaust System</a>
+<a href="../../equipment/utilities/hvac.html" class="nav-sub">HVAC &amp; Exhaust System</a>
 <a href="../../equipment/utilities/hot-water.html" class="nav-sub">Hot Water System</a>
 <a href="../../equipment/utilities/ro-water.html" class="nav-sub">RO Water System</a>
-</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Vessels</div><div class="nav-folder-links"><a href="../../equipment/vessels/ibc-tote.html" class="nav-sub">IBC Tote (Generic)</a>
+</div></div><div class="nav-folder"><div class="nav-folder-label">Vessels</div><div class="nav-folder-links"><a href="../../equipment/vessels/ibc-tote.html" class="nav-sub">IBC Tote (Generic)</a>
 <a href="../../equipment/vessels/ibc-350-001.html" class="nav-sub">IBC-350-001</a>
 <a href="../../equipment/vessels/ibc-350-002.html" class="nav-sub">IBC-350-002</a>
 <a href="../../equipment/vessels/ibc-550-001.html" class="nav-sub">IBC-550-001</a>
 <a href="../../equipment/vessels/processing-tank.html" class="nav-sub">Processing Tank (Generic)</a>
 <a href="../../equipment/vessels/pt-01.html" class="nav-sub">PT-01: 2,000 Gal</a>
-<a href="../../equipment/vessels/pt-02.html" class="nav-sub">PT-02: 3,500 Gal</a>
+<a href="../../equipment/vessels/pt-02.html" class="nav-sub active">PT-02: 3,500 Gal</a>
 <a href="../../equipment/vessels/tank-100l-001.html" class="nav-sub">100L Mobile Tank</a>
 <a href="../../equipment/vessels/tank-30l-001.html" class="nav-sub">30L Mobile Tank</a>
 </div></div></div></div><div class="nav-section collapsed" data-section="sops"><div class="nav-section-label">SOPs</div><div class="nav-section-links"><a href="../../sops/index.html" class="nav-link">SOP Index</a>
@@ -184,89 +144,115 @@ document.addEventListener('DOMContentLoaded', function() {
 </div></div></div></nav>
 <div class="main">
 <div class="page-header">
-  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Equipment</a> / HVAC &amp; Exhaust</div>
-  <h1 class="page-title">HVAC & Exhaust System<button class="fav-btn" id="favBtn" data-title="HVAC & Exhaust System" data-url="equipment/utilities/hvac.html"><span class="fav-star">☆</span><span class="fav-label">Pin</span></button></h1>
-  <p class="page-subtitle">Climate control, ventilation, and vapor exhaust for flammable liquid processing areas.</p>
+  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../../equipment/index.html">Equipment</a> / <a href="../../equipment/vessels/processing-tank.html">Vessels</a> / PT-02</div>
+  <h1 class="page-title">PT-02 &mdash; 3,500 Gallon Processing Tank<button class="fav-btn" id="favBtn" data-title="PT-02: 3,500 Gallon Processing Tank" data-url="equipment/vessels/pt-02.html"><span class="fav-star">&#9734;</span><span class="fav-label">Pin</span></button></h1>
+  <p class="page-subtitle">Large fixed stainless steel vessel for bulk spirit holding and blending. UL 142 certified.</p>
 </div>
-<div class="page-content"><p><strong>Purpose:</strong> Maintains safe temperature and humidity conditions in the facility while continuously removing flammable vapor from all processing areas. Proper function of the exhaust system is a life-safety requirement in any area where alcohol is handled.</p>
-<h2>System Components</h2>
-<table class="spec-table"><thead><tr><th>Component</th><th>Details</th></tr></thead><tbody>
-  <tr><td>HVAC Unit</td><td>[Manufacturer] [Model] — [X] ton capacity</td></tr>
-  <tr><td>Exhaust Fan</td><td>[Manufacturer] [Model] — [X,XXX] CFM</td></tr>
-  <tr><td>Makeup Air Unit</td><td>[Manufacturer] [Model] — balanced to exhaust rate</td></tr>
-  <tr><td>HRV (Heat Recovery)</td><td>[Manufacturer] [Model] — energy recovery ventilation</td></tr>
-  <tr><td>LEL Sensor(s)</td><td>Lower Explosive Limit detection — auto-triggers increased ventilation at [XX]% LEL</td></tr>
-  <tr><td>Vendor</td><td><a href="../../vendors/maintenance-service.html" class="wikilink">[HVAC Maintenance Vendor]</a></td></tr>
-</tbody></table>
-<div class="callout callout-warning"><div class="callout-label">Life Safety System</div>The exhaust system must be verified as operational before beginning any production activity. If the exhaust system is down, halt all operations involving open containers of alcohol until it is restored.</div>
-<h2>Maintenance Schedule</h2>
-<ul>
-  <li><strong>Monthly:</strong> Inspect and replace air filters. Check LEL sensor function.</li>
-  <li><strong>Quarterly:</strong> Professional inspection of exhaust fan belts, bearings, and damper operation.</li>
-  <li><strong>Annually:</strong> Full HVAC service including coil cleaning and refrigerant check.</li>
-</ul>
-<h2>Maintenance Log</h2>
-<table class="spec-table"><thead><tr><th>Date</th><th>Activity</th></tr></thead><tbody>
-  <tr><td>[Date]</td><td>[Log service events here]</td></tr>
-</tbody></table></div>
+<div class="page-content">
+<div class="asset-meta">
+  <div class="asset-meta-item"><span class="asset-meta-label">Asset ID</span><span class="asset-meta-value">PT-02</span></div>
+  <div class="asset-meta-item"><span class="asset-meta-label">Type</span><span class="asset-meta-value">Processing Tank</span></div>
+  <div class="asset-meta-item"><span class="asset-meta-label">Capacity</span><span class="asset-meta-value">3,500 Gal</span></div>
+  <div class="asset-meta-item"><span class="asset-meta-label">Status</span><span class="asset-meta-value status-active">Active</span></div>
+  <div class="asset-meta-item"><span class="asset-meta-label">Location</span><span class="asset-meta-value">[Suite / Zone]</span></div>
+  <div class="asset-meta-item"><span class="asset-meta-label">Fabricator</span><span class="asset-meta-value"><a href="../../vendors/equipment-fabricator.html">[Equipment Fabricator]</a></span></div>
 </div>
 
+<p><strong>Purpose:</strong> Large-volume spirit holding and blending. Identical construction to PT-01 but with greater capacity. Equipped with top-mounted agitation and integrated CIP.</p>
+
+<h2>Technical Specifications</h2>
+<table class="spec-table">
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Asset ID</td><td>PT-02</td></tr>
+    <tr><td>Serial Number</td><td>[XXXX-XXB]</td></tr>
+    <tr><td>Material</td><td>304 Stainless Steel</td></tr>
+    <tr><td>Certification</td><td>UL 142</td></tr>
+    <tr><td>Total Capacity</td><td>3,710 gallons (approx.)</td></tr>
+    <tr><td>Working Capacity</td><td>3,500 gallons</td></tr>
+    <tr><td>Volume per Inch</td><td>[XX.X] gallons</td></tr>
+    <tr><td>Agitator</td><td>0.5 HP, inverter duty, Class I Group D</td></tr>
+    <tr><td>Fabricator</td><td><a href="../../vendors/equipment-fabricator.html" class="wikilink">[Equipment Fabricator]</a></td></tr>
+    <tr><td>Install Date</td><td>[YYYY-MM-DD]</td></tr>
+  </tbody>
+</table>
+
+<h2>Critical Volumes &amp; CIP Dosing Reference</h2>
+<table class="dosing-table">
+  <thead><tr><th>Level</th><th>Volume (gal)</th><th>Citric Acid @ 100 g/gal</th><th>Alkaline Detergent (per label)</th></tr></thead>
+  <tbody>
+    <tr><td>Top of Cone</td><td>90</td><td>9.0 kg (19.8 lbs)</td><td>[per label rate]</td></tr>
+    <tr><td>Bottom of Manway</td><td>140</td><td>14.0 kg (30.9 lbs)</td><td>[per label rate]</td></tr>
+    <tr><td>Bottom of Sample Port</td><td>275</td><td>27.5 kg (60.6 lbs)</td><td>[per label rate]</td></tr>
+    <tr><td>Working Capacity</td><td>3,500</td><td>350 kg (772 lbs)</td><td>[per label rate]</td></tr>
+  </tbody>
+</table>
+
+<h2>Physical Components</h2>
+<ul>
+  <li>Top manway: 16&quot; round bolted manway with handles</li>
+  <li>Front manway: 16&quot; round side manway for interior inspection</li>
+  <li>Agitator: 0.5 HP motor, inverter duty, Class I Group D</li>
+  <li>CIP arm: 3&quot; port with 1.5&quot; spray ball side arm</li>
+  <li>Emergency vent: Flanged port with pressure relief valve</li>
+  <li>Normal vent: Flame arrester / pressure-vacuum vent</li>
+</ul>
+
+<h2>Utilities &amp; Connections</h2>
+<ul>
+  <li><a href="../utilities/compressed-air.html" class="wikilink">Compressed Air System</a></li>
+  <li><a href="../utilities/hot-water.html" class="wikilink">Hot Water System</a></li>
+  <li><a href="../utilities/ro-water.html" class="wikilink">RO Water System</a></li>
+</ul>
+
+<div class="callout callout-warning"><div class="callout-label">Lockout / Tagout Required</div>Follow facility LOTO procedures before any maintenance on this vessel.</div>
+
+<h2>Maintenance &amp; Activity Log</h2>
+<table class="spec-table">
+  <thead><tr><th>Date</th><th>Performed By</th><th>Activity</th></tr></thead>
+  <tbody>
+    <tr><td>[YYYY-MM-DD]</td><td>[Name]</td><td>Initial commissioning. Passivation completed.</td></tr>
+    <tr><td>[Date]</td><td>[Name]</td><td>[Log maintenance events here]</td></tr>
+  </tbody>
+</table>
+
+<div class="related-docs"><h2>Related Documentation</h2>
+<div class="related-grid">
+  <a href="pt-01.html" class="related-card"><div class="related-card-type">Equipment</div><div class="related-card-title">PT-01: 2,000 Gal Tank</div></a>
+  <a href="../../sops/cip-processing-tanks.html" class="related-card"><div class="related-card-type">SOP</div><div class="related-card-title">Processing Tank CIP</div></a>
+  <a href="../../sops/proofing.html" class="related-card"><div class="related-card-type">SOP</div><div class="related-card-title">Proofing Operations</div></a>
+  <a href="../../chemicals/citric-acid.html" class="related-card"><div class="related-card-type">Chemical</div><div class="related-card-title">Citric Acid</div></a>
+</div></div>
+</div>
+</div>
 <script>
-  
-</script>
-<script>
-  // ── Sidebar state management ──
   (function() {
     var sb = document.getElementById('sidebar');
     var mn = document.querySelector('.main');
     if (!sb || !mn) return;
-
     function isCollapsed() { return localStorage.getItem('sidebarCollapsed') === '1'; }
-
     function applyState(collapsed) {
-      if (collapsed) {
-        sb.classList.add('sidebar-collapsed');
-        mn.classList.add('sidebar-collapsed');
-      } else {
-        sb.classList.remove('sidebar-collapsed');
-        mn.classList.remove('sidebar-collapsed');
-      }
+      if (collapsed) { sb.classList.add('sidebar-collapsed'); mn.classList.add('sidebar-collapsed'); }
+      else { sb.classList.remove('sidebar-collapsed'); mn.classList.remove('sidebar-collapsed'); }
     }
-
     function toggle() {
       var nowCollapsed = !sb.classList.contains('sidebar-collapsed');
       applyState(nowCollapsed);
       localStorage.setItem('sidebarCollapsed', nowCollapsed ? '1' : '0');
     }
-
-    // Apply saved state immediately (no flash)
-    // On mobile, sidebar always starts hidden (controlled by mobile-open class)
     sb.style.transition = 'none'; mn.style.transition = 'none';
     if (window.innerWidth > 768) { applyState(isCollapsed()); }
     requestAnimationFrame(function() { requestAnimationFrame(function() { sb.style.transition = ''; mn.style.transition = ''; }); });
-
-    // Wire up desktop hamburger
     var tog = document.getElementById('sidebarToggle');
     if (tog) tog.addEventListener('click', toggle);
-
-    // Wire up mobile hamburger
     var mobileBtn = document.getElementById('mobileMenuBtn');
     var overlay = document.getElementById('mobileOverlay');
     if (mobileBtn) {
-      mobileBtn.addEventListener('click', function() {
-        sb.classList.toggle('mobile-open');
-        if (overlay) overlay.classList.toggle('active');
-      });
+      mobileBtn.addEventListener('click', function() { sb.classList.toggle('mobile-open'); if (overlay) overlay.classList.toggle('active'); });
     }
-    if (overlay) overlay.addEventListener('click', function() {
-      sb.classList.remove('mobile-open');
-      overlay.classList.remove('active');
-    });
+    if (overlay) overlay.addEventListener('click', function() { sb.classList.remove('mobile-open'); overlay.classList.remove('active'); });
     if (sb) sb.querySelectorAll('a').forEach(function(a) {
-      a.addEventListener('click', function() {
-        sb.classList.remove('mobile-open');
-        if (overlay) overlay.classList.remove('active');
-      });
+      a.addEventListener('click', function() { sb.classList.remove('mobile-open'); if (overlay) overlay.classList.remove('active'); });
     });
   })();
 </script>
