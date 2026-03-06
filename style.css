@@ -185,12 +185,14 @@ body {
 
 .nav-section-links { overflow: hidden; }
 /* Index links (nav-link inside nav-section-links) same as section */
-.nav-section[data-section="sops"]  .nav-section-links .nav-link,
-.nav-section[data-section="equip"] .nav-section-links .nav-link,
-.nav-section[data-section="chem"]  .nav-section-links .nav-link,
-.nav-section[data-section="vend"]  .nav-section-links .nav-link,
-.nav-section[data-section="tools"] .nav-section-links .nav-link,
-.nav-section[data-section="admin"] .nav-section-links .nav-link {
+.nav-section[data-section="sops"]     .nav-section-links .nav-link,
+.nav-section[data-section="equip"]    .nav-section-links .nav-link,
+.nav-section[data-section="chem"]     .nav-section-links .nav-link,
+.nav-section[data-section="vend"]     .nav-section-links .nav-link,
+.nav-section[data-section="tools"]    .nav-section-links .nav-link,
+.nav-section[data-section="admin"]    .nav-section-links .nav-link,
+.nav-section[data-section="barrels"]  .nav-section-links .nav-link,
+.nav-section[data-section="supplies"] .nav-section-links .nav-link {
   color: white;
   font-weight: 600;
   padding: 3px 12px;
@@ -458,7 +460,9 @@ a.wikilink:hover { border-color: var(--lyt-teal); }
 .nav-section[data-section="equip"] { background: #d4874a; }
 .nav-section[data-section="sops"]  { background: #c45a4a; }
 .nav-section[data-section="tools"] { background: #286983; }
-.nav-section[data-section="vend"]  { background: #6a9e72; }
+.nav-section[data-section="vend"]     { background: #6a9e72; }
+.nav-section[data-section="barrels"]  { background: #8a6540; }  /* warm oak/whiskey brown */
+.nav-section[data-section="supplies"] { background: #4a6882; }  /* slate blue */
 
 /* Label and links transparent — they sit on top of section background */
 .nav-section-label { background: transparent !important; }

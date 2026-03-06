@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RO Water System — [Company Name] Operations Guide</title>
+<title>Exhaust &amp; Ventilation System — [Company Name] Operations Guide</title>
 <link rel="stylesheet" href="../../style.css"><script>
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -152,9 +152,10 @@ document.addEventListener('DOMContentLoaded', function() {
 </div></div><div class="nav-folder"><div class="nav-folder-label">Utilities</div><div class="nav-folder-links"><a href="../../equipment/utilities/city-water.html" class="nav-sub">City Water</a>
 <a href="../../equipment/utilities/compressed-air.html" class="nav-sub">Compressed Air System</a>
 <a href="../../equipment/utilities/generator.html" class="nav-sub">Emergency Generator</a>
-<a href="../../equipment/utilities/hvac.html" class="nav-sub">HVAC &amp; Exhaust System</a>
+<a href="../../equipment/utilities/hvac.html" class="nav-sub">HVAC System</a>
+<a href="../../equipment/utilities/exhaust.html" class="nav-sub active">Exhaust &amp; Ventilation</a>
 <a href="../../equipment/utilities/hot-water.html" class="nav-sub">Hot Water System</a>
-<a href="../../equipment/utilities/ro-water.html" class="nav-sub active">RO Water System</a>
+<a href="../../equipment/utilities/filtered-water.html" class="nav-sub">Filtered Water System</a>
 </div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Vessels</div><div class="nav-folder-links"><a href="../../equipment/vessels/ibc-tote.html" class="nav-sub">IBC Tote (Generic)</a>
 <a href="../../equipment/vessels/ibc-350-001.html" class="nav-sub">IBC-350-001</a>
 <a href="../../equipment/vessels/ibc-350-002.html" class="nav-sub">IBC-350-002</a>
@@ -184,38 +185,33 @@ document.addEventListener('DOMContentLoaded', function() {
 </div></div></div></nav>
 <div class="main">
 <div class="page-header">
-  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Equipment</a> / RO Water System</div>
-  <h1 class="page-title">RO Water System<button class="fav-btn" id="favBtn" data-title="RO Water System" data-url="equipment/utilities/ro-water.html"><span class="fav-star">☆</span><span class="fav-label">Pin</span></button></h1>
-  <p class="page-subtitle">Reverse osmosis treatment and delivery of high-purity process water.</p>
+  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Equipment</a> / Exhaust &amp; Ventilation</div>
+  <h1 class="page-title">Exhaust &amp; Ventilation System<button class="fav-btn" id="favBtn" data-title="Exhaust &amp; Ventilation System" data-url="equipment/utilities/exhaust.html"><span class="fav-star">☆</span><span class="fav-label">Pin</span></button></h1>
+  <p class="page-subtitle">Vapor exhaust and makeup air system for flammable liquid processing areas. A life-safety system.</p>
 </div>
-<div class="page-content"><p><strong>Purpose:</strong> Produces and delivers demineralized water for spirit proofing, final equipment rinsing, and other operations requiring high-purity water. Mineral-rich water must never be used for proofing — see <a href="../../sops/proofing.html" class="wikilink">Proofing SOP</a> for details.</p>
-<h2>System Overview</h2>
+<div class="page-content"><p><strong>Purpose:</strong> Continuously removes flammable vapor from all production areas and maintains facility air pressure balance through coordinated exhaust fan and makeup air operation. Proper function of the exhaust system is a <strong>life-safety requirement</strong> in any area where alcohol is handled.</p>
+<h2>System Components</h2>
 <table class="spec-table"><thead><tr><th>Component</th><th>Details</th></tr></thead><tbody>
-  <tr><td>RO Treatment Unit</td><td>[Manufacturer] [Model], [XXX] GPD capacity</td></tr>
-  <tr><td>Feed Pressure (Min/Max)</td><td>[XX] / [XX] psi</td></tr>
-  <tr><td>Max Feed TDS</td><td>[XXX] ppm</td></tr>
-  <tr><td>Storage Tank</td><td>[XXX] gallon atmospheric tank</td></tr>
-  <tr><td>Booster Pump</td><td>[Manufacturer] [Model], max [XX] gpm</td></tr>
-  <tr><td>Service Vendor</td><td><a href="../../vendors/maintenance-service.html" class="wikilink">[Water Treatment Vendor]</a></td></tr>
+  <tr><td>Exhaust Fan</td><td>[Manufacturer] [Model] — [X,XXX] CFM</td></tr>
+  <tr><td>Makeup Air Unit</td><td>[Manufacturer] [Model] — balanced to exhaust rate</td></tr>
+  <tr><td>LEL Sensor(s)</td><td>Lower Explosive Limit detection — auto-triggers increased ventilation at [XX]% LEL</td></tr>
+  <tr><td>Vendor</td><td><a href="../../vendors/maintenance-service.html" class="wikilink">[HVAC Maintenance Vendor]</a></td></tr>
 </tbody></table>
-<h2>Filter Sequence</h2>
-<table class="dosing-table"><thead><tr><th>Stage</th><th>Type</th><th>Purpose</th></tr></thead><tbody>
-  <tr><td>Stage 1</td><td>Sediment (5 µm)</td><td>Remove particulates from feed water</td></tr>
-  <tr><td>Stage 2</td><td>Carbon Block (10 µm)</td><td>Primary chlorine removal</td></tr>
-  <tr><td>Stage 3</td><td>Carbon Block (10 µm)</td><td>Secondary chlorine polishing</td></tr>
-  <tr><td>Stage 4</td><td>RO Membrane</td><td>Demineralization</td></tr>
-</tbody></table>
-<div class="callout callout-warning"><div class="callout-label">Membrane Protection</div>The dual carbon stages are critical. Any chlorine breakthrough will permanently degrade the RO membrane. Replace carbon filters on schedule.</div>
+<div class="callout callout-warning"><div class="callout-label">Life Safety System</div>The exhaust system must be verified as operational before beginning any production activity involving open containers of alcohol. If the exhaust system is down, halt all operations and do not resume until the system is restored and confirmed functional.</div>
 <h2>Maintenance Schedule</h2>
 <ul>
-  <li><strong>Monthly:</strong> Test product water TDS. Target: &lt; [XX] ppm.</li>
-  <li><strong>Every 6 months:</strong> Replace sediment and carbon pre-filters.</li>
-  <li><strong>Annually:</strong> Inspect RO membrane performance; replace if rejection rate declines.</li>
+  <li><strong>Monthly:</strong> Check LEL sensor function and calibration.</li>
+  <li><strong>Quarterly:</strong> Professional inspection of exhaust fan belts, bearings, and damper operation.</li>
 </ul>
 <h2>Maintenance Log</h2>
 <table class="spec-table"><thead><tr><th>Date</th><th>Activity</th></tr></thead><tbody>
-  <tr><td>[Date]</td><td>[Log filter changes and service events here]</td></tr>
-</tbody></table></div>
+  <tr><td>[Date]</td><td>[Log exhaust fan service, sensor calibrations, and damper inspections here]</td></tr>
+</tbody></table>
+<div class="related-docs"><h2>Related Documentation</h2>
+<div class="related-grid">
+  <a href="hvac.html" class="related-card"><div class="related-card-type">Equipment</div><div class="related-card-title">HVAC System</div></a>
+</div></div>
+</div>
 </div>
 
 <script>
