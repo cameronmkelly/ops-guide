@@ -7,7 +7,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     var sb = document.getElementById('sidebar');
     if (!sb) return;
-    sb.querySelectorAll('a.nav-link, a.nav-sub').forEach(function (a) {
+    sb.querySelectorAll('a[href]').forEach(function (a) {
       a.href = a.href; // read resolved absolute URL, write back to attribute
     });
   });
