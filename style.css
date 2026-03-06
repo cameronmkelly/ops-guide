@@ -81,6 +81,7 @@ body {
   border-right: 1px solid var(--dawn-hl-med);
   scrollbar-width: thin;
   scrollbar-color: var(--main-muted) transparent;
+  scrollbar-gutter: stable;
   transition: width 0.25s ease;
 }
 
@@ -462,7 +463,7 @@ a.wikilink:hover { border-color: var(--lyt-teal); }
 .nav-section[data-section="tools"] { background: #286983; }
 .nav-section[data-section="vend"]     { background: #6a9e72; }
 .nav-section[data-section="barrels"]  { background: #8a6540; }  /* warm oak/whiskey brown */
-.nav-section[data-section="supplies"] { background: #4a6882; }  /* slate blue */
+.nav-section[data-section="supplies"] { background: #8a5070; }  /* dusty mauve */
 
 /* Label and links transparent — they sit on top of section background */
 .nav-section-label { background: transparent !important; }
