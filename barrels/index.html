@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barrel Index &#8212; [Company Name] Operations Guide</title>
+<link rel="stylesheet" href="../style.css">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var NAV_STATE_KEY = 'ops-guide-nav-state';
+  function saveNavState() {
+    var state = {};
+    document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+      state['s:' + s.getAttribute('data-section')] = !s.classList.contains('collapsed');
+    });
+    document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+      state['f:' + i] = !f.classList.contains('collapsed');
+    });
+    localStorage.setItem(NAV_STATE_KEY, JSON.stringify(state));
+  }
+  function restoreNavState() {
+    try {
+      var state = JSON.parse(localStorage.getItem(NAV_STATE_KEY));
+      if (!state) return;
+      document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+        var key = 's:' + s.getAttribute('data-section');
+        if (key in state) s.classList.toggle('collapsed', !state[key]);
+      });
+      document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+        var key = 'f:' + i;
+        if (key in state) f.classList.toggle('collapsed', !state[key]);
+      });
+    } catch(e) {}
+  }
+  document.querySelectorAll('.nav-section-label').forEach(function(label) {
+    label.addEventListener('click', function() { this.parentElement.classList.toggle('collapsed'); saveNavState(); });
+  });
+  document.querySelectorAll('.nav-folder-label').forEach(function(label) {
+    label.addEventListener('click', function() { this.parentElement.classList.toggle('collapsed'); saveNavState(); });
+  });
+  restoreNavState();
+  var FAVS_KEY = 'ops-guide-favorites';
+  function getFavs() { try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; } catch(e) { return []; } }
+  function saveFavs(favs) { localStorage.setItem(FAVS_KEY, JSON.stringify(favs)); }
+  function renderFavs() {
+    var favs = getFavs();
+    var list = document.getElementById('favoritesList');
+    var section = document.getElementById('favoritesSection');
+    if (!list) return;
+    list.innerHTML = '';
+    if (favs.length === 0) {
+      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the &#9733; on any page</div>';
+      if (section) section.classList.add('collapsed');
+      return;
+    }
+    if (section) section.classList.remove('collapsed');
+    favs.forEach(function(fav) {
+      var row = document.createElement('div');
+      row.className = 'nav-fav-item';
+      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a><button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">&#10005;</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.nav-fav-remove').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var url = this.getAttribute('data-url');
+        saveFavs(getFavs().filter(function(f) { return f.url !== url; }));
+        renderFavs(); updateFavBtn();
+      });
+    });
+  }
+  function updateFavBtn() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var isFav = getFavs().some(function(f) { return f.url === btn.getAttribute('data-url'); });
+    btn.classList.toggle('fav-active', isFav);
+    btn.querySelector('.fav-star').textContent = isFav ? '\u2605' : '\u2606';
+    btn.querySelector('.fav-label').textContent = isFav ? 'Pinned' : 'Pin';
+  }
+  function toggleFav() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var favs = getFavs(); var url = btn.getAttribute('data-url'); var title = btn.getAttribute('data-title');
+    var idx = favs.findIndex(function(f) { return f.url === url; });
+    if (idx >= 0) { favs.splice(idx, 1); } else { favs.push({ url: url, title: title }); }
+    saveFavs(favs); renderFavs(); updateFavBtn();
+  }
+  var favBtn = document.getElementById('favBtn');
+  if (favBtn) favBtn.addEventListener('click', toggleFav);
+  renderFavs(); updateFavBtn();
+  window._nav = { toggleFav: toggleFav, updateFavBtn: updateFavBtn, renderFavs: renderFavs };
+});
+</script>
+</head><body>
+<div class="mobile-header">
+  <span class="mobile-header-title">Operations Guide</span>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+</div>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">&#9776;</button></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">&#9733; Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the &#9733; on any page</div></div></div><div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links"><a href="../administrative/index.html" class="nav-link">Administrative Index</a>
+<a href="../administrative/product-receiving.html" class="nav-sub">Product &amp; Material Receiving</a>
+</div></div><div class="nav-section" data-section="barrels"><div class="nav-section-label">Barrels</div><div class="nav-section-links"><a href="../barrels/index.html" class="nav-link active">Barrel Index</a>
+<a href="../barrels/intake.html" class="nav-sub">Barrel Intake &amp; Receiving</a>
+<a href="../barrels/logistics.html" class="nav-sub">Barrel Logistics &amp; Transport</a>
+</div></div><div class="nav-section collapsed" data-section="chem"><div class="nav-section-label">Chemicals &amp; SDS</div><div class="nav-section-links"><a href="../chemicals/index.html" class="nav-link">Chemical Index</a>
+<a href="../chemicals/alkaline-detergent.html" class="nav-sub">Alkaline Detergent</a>
+<a href="../chemicals/citric-acid.html" class="nav-sub">Citric Acid</a>
+<a href="../chemicals/sanitizer.html" class="nav-sub">No-Rinse Sanitizer</a>
+</div></div><div class="nav-section collapsed" data-section="equip"><div class="nav-section-label">Equipment</div><div class="nav-section-links"><a href="../equipment/index.html" class="nav-link">Equipment Index</a>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Lab &amp; Bottling</div><div class="nav-folder-links"><a href="../equipment/lab-bottling/alcohol-meter.html" class="nav-sub">Digital Alcohol Meter</a>
+<a href="../equipment/lab-bottling/bottle-filler.html" class="nav-sub">Manual Bottle Filler</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Material Handling</div><div class="nav-folder-links"><a href="../equipment/material-handling/forklift.html" class="nav-sub">Electric Forklift</a>
+<a href="../equipment/material-handling/pallet-jack.html" class="nav-sub">Pallet Jack</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Processing</div><div class="nav-folder-links"><a href="../equipment/processing/pump-01.html" class="nav-sub">Pump-01: AODD (1&quot;)</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Utilities</div><div class="nav-folder-links"><a href="../equipment/utilities/city-water.html" class="nav-sub">City Water</a>
+<a href="../equipment/utilities/compressed-air.html" class="nav-sub">Compressed Air System</a>
+<a href="../equipment/utilities/generator.html" class="nav-sub">Emergency Generator</a>
+<a href="../equipment/utilities/hvac.html" class="nav-sub">HVAC System</a>
+<a href="../equipment/utilities/exhaust.html" class="nav-sub">Exhaust &amp; Ventilation</a>
+<a href="../equipment/utilities/hot-water.html" class="nav-sub">Hot Water System</a>
+<a href="../equipment/utilities/filtered-water.html" class="nav-sub">Filtered Water System</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Vessels</div><div class="nav-folder-links"><a href="../equipment/vessels/ibc-tote.html" class="nav-sub">IBC Tote (Generic)</a>
+<a href="../equipment/vessels/ibc-350-001.html" class="nav-sub">IBC-350-001</a>
+<a href="../equipment/vessels/ibc-350-002.html" class="nav-sub">IBC-350-002</a>
+<a href="../equipment/vessels/ibc-550-001.html" class="nav-sub">IBC-550-001</a>
+<a href="../equipment/vessels/processing-tank.html" class="nav-sub">Processing Tank (Generic)</a>
+<a href="../equipment/vessels/pt-01.html" class="nav-sub">PT-01: 2,000 Gal</a>
+<a href="../equipment/vessels/pt-02.html" class="nav-sub">PT-02: 3,500 Gal</a>
+<a href="../equipment/vessels/tank-100l-001.html" class="nav-sub">100L Mobile Tank</a>
+<a href="../equipment/vessels/tank-30l-001.html" class="nav-sub">30L Mobile Tank</a>
+</div></div></div></div><div class="nav-section collapsed" data-section="sops"><div class="nav-section-label">SOPs</div><div class="nav-section-links"><a href="../sops/index.html" class="nav-link">SOP Index</a>
+<a href="../sops/barrel-disgorging.html" class="nav-sub">SOP: Barrel Disgorging</a>
+<a href="../sops/bottle-filling.html" class="nav-sub">SOP: Bottling Line</a>
+<a href="../sops/cip-processing-tanks.html" class="nav-sub">SOP: Processing Tank CIP</a>
+<a href="../sops/proofing.html" class="nav-sub">SOP: Proofing Operations</a>
+</div></div><div class="nav-section collapsed" data-section="supplies"><div class="nav-section-label">Supplies</div><div class="nav-section-links"><a href="../supplies/index.html" class="nav-link">Supplies Index</a>
+<a href="../supplies/barrel-closures.html" class="nav-sub">Barrel Closure Supplies</a>
+<a href="../supplies/filter-cartridges.html" class="nav-sub">Filter Cartridges</a>
+<a href="../supplies/cleaning-consumables.html" class="nav-sub">Cleaning Consumables</a>
+</div></div><div class="nav-section collapsed" data-section="tools"><div class="nav-section-label">Tools &amp; Concepts</div><div class="nav-section-links"><a href="../tools/index.html" class="nav-link">Tools &amp; Concepts Index</a>
+<a href="../tools/chemical-dilution.html" class="nav-sub">Facility Calculators</a>
+<a href="../tools/proofing-concepts.html" class="nav-sub">Proofing Concepts</a>
+</div></div><div class="nav-section collapsed" data-section="vend"><div class="nav-section-label">Vendors</div><div class="nav-section-links"><a href="../vendors/index.html" class="nav-link">Vendor Index</a>
+<a href="../vendors/chemical-supplier.html" class="nav-sub">[Chemical Supplier]</a>
+<a href="../vendors/equipment-fabricator.html" class="nav-sub">[Equipment Fabricator]</a>
+<a href="../vendors/forklift-service.html" class="nav-sub">[Forklift Service Vendor]</a>
+<a href="../vendors/maintenance-service.html" class="nav-sub">[Maintenance &amp; Service Vendor]</a>
+</div></div></div></nav>
+<div class="main">
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Home</a> / Barrels</div>
+  <h1 class="page-title">Barrel Index<button class="fav-btn" id="favBtn" data-title="Barrel Index" data-url="barrels/index.html"><span class="fav-star">&#9734;</span><span class="fav-label">Pin</span></button></h1>
+  <p class="page-subtitle">Barrel receiving, storage, sampling, and logistics documentation.</p>
+</div>
+<div class="page-content">
+<p>Documentation for barrel receiving, storage, sampling, and logistics operations. Barrels are core to the aging program and represent significant product value — accurate documentation is essential for TTB compliance and inventory accuracy.</p>
+
+<div class="card-grid">
+  <a href="intake.html" class="index-card"><div class="index-card-type">Operations</div><div class="index-card-title">Barrel Intake &amp; Receiving</div><div class="index-card-desc">Ordering strategy, receiving inspection, storage requirements, and TTB intake documentation.</div></a>
+  <a href="logistics.html" class="index-card"><div class="index-card-type">Logistics</div><div class="index-card-title">Barrel Logistics &amp; Transport</div><div class="index-card-desc">Carrier contacts, per-trailer stacking specifications, and loading configurations for full and empty barrels.</div></a>
+</div>
+
+<div class="related-docs"><h2>Related Documentation</h2>
+<div class="related-grid">
+  <a href="../administrative/index.html" class="related-card"><div class="related-card-type">Admin</div><div class="related-card-title">Administrative Index</div></a>
+  <a href="../supplies/barrel-closures.html" class="related-card"><div class="related-card-type">Supplies</div><div class="related-card-title">Barrel Closure Supplies</div></a>
+  <a href="../vendors/equipment-fabricator.html" class="related-card"><div class="related-card-type">Vendor</div><div class="related-card-title">[Equipment Fabricator]</div></a>
+</div></div>
+</div>
+</div>
+<script>
+  (function() {
+    var sb = document.getElementById('sidebar');
+    var mn = document.querySelector('.main');
+    if (!sb || !mn) return;
+    function isCollapsed() { return localStorage.getItem('sidebarCollapsed') === '1'; }
+    function applyState(collapsed) {
+      if (collapsed) { sb.classList.add('sidebar-collapsed'); mn.classList.add('sidebar-collapsed'); }
+      else { sb.classList.remove('sidebar-collapsed'); mn.classList.remove('sidebar-collapsed'); }
+    }
+    function toggle() {
+      var nowCollapsed = !sb.classList.contains('sidebar-collapsed');
+      applyState(nowCollapsed);
+      localStorage.setItem('sidebarCollapsed', nowCollapsed ? '1' : '0');
+    }
+    sb.style.transition = 'none'; mn.style.transition = 'none';
+    if (window.innerWidth > 768) { applyState(isCollapsed()); }
+    requestAnimationFrame(function() { requestAnimationFrame(function() { sb.style.transition = ''; mn.style.transition = ''; }); });
+    var tog = document.getElementById('sidebarToggle');
+    if (tog) tog.addEventListener('click', toggle);
+    var mobileBtn = document.getElementById('mobileMenuBtn');
+    var overlay = document.getElementById('mobileOverlay');
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', function() { sb.classList.toggle('mobile-open'); if (overlay) overlay.classList.toggle('active'); });
+    }
+    if (overlay) overlay.addEventListener('click', function() { sb.classList.remove('mobile-open'); overlay.classList.remove('active'); });
+    if (sb) sb.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() { sb.classList.remove('mobile-open'); if (overlay) overlay.classList.remove('active'); });
+    });
+  })();
+</script>
+<script src="../pjax.js"></script>
+</body></html>

@@ -81,6 +81,7 @@ body {
   border-right: 1px solid var(--dawn-hl-med);
   scrollbar-width: thin;
   scrollbar-color: var(--main-muted) transparent;
+  scrollbar-gutter: stable;
   transition: width 0.25s ease;
 }
 
@@ -185,12 +186,14 @@ body {
 
 .nav-section-links { overflow: hidden; }
 /* Index links (nav-link inside nav-section-links) same as section */
-.nav-section[data-section="sops"]  .nav-section-links .nav-link,
-.nav-section[data-section="equip"] .nav-section-links .nav-link,
-.nav-section[data-section="chem"]  .nav-section-links .nav-link,
-.nav-section[data-section="vend"]  .nav-section-links .nav-link,
-.nav-section[data-section="tools"] .nav-section-links .nav-link,
-.nav-section[data-section="admin"] .nav-section-links .nav-link {
+.nav-section[data-section="sops"]     .nav-section-links .nav-link,
+.nav-section[data-section="equip"]    .nav-section-links .nav-link,
+.nav-section[data-section="chem"]     .nav-section-links .nav-link,
+.nav-section[data-section="vend"]     .nav-section-links .nav-link,
+.nav-section[data-section="tools"]    .nav-section-links .nav-link,
+.nav-section[data-section="admin"]    .nav-section-links .nav-link,
+.nav-section[data-section="barrels"]  .nav-section-links .nav-link,
+.nav-section[data-section="supplies"] .nav-section-links .nav-link {
   color: white;
   font-weight: 600;
   padding: 3px 12px;
@@ -424,6 +427,17 @@ a.wikilink:hover { border-color: var(--lyt-teal); }
 .tier-text { font-size: 0.86rem; color: var(--dawn-text); }
 .tier-trigger { display: block; font-family: var(--font-heading); font-weight: 600; font-size: 0.88rem; color: var(--dawn-text); margin-bottom: 2px; }
 
+/* ── ASSET META PANEL ── */
+.asset-meta { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 28px; padding: 14px 18px; background: var(--dawn-surface); border: 1px solid var(--dawn-hl-med); border-radius: 8px; }
+.asset-meta-item { display: flex; flex-direction: column; gap: 3px; min-width: 90px; }
+.asset-meta-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dawn-muted); }
+.asset-meta-value { font-size: 0.85rem; font-weight: 500; color: var(--dawn-text); }
+.asset-meta-value a { color: var(--lyt-teal); text-decoration: none; }
+.asset-meta-value a:hover { text-decoration: underline; }
+.status-active { color: #4a9e6b; font-weight: 600; }
+.status-inactive { color: var(--dawn-muted); font-weight: 600; }
+.status-draft { color: #c08c3a; font-weight: 600; }
+
 /* ── RELATED DOCS ── */
 .related-docs { margin-top: 40px; padding-top: 24px; border-top: 2px solid var(--dawn-hl-med); }
 .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 8px; margin-top: 10px; }
@@ -447,7 +461,9 @@ a.wikilink:hover { border-color: var(--lyt-teal); }
 .nav-section[data-section="equip"] { background: #d4874a; }
 .nav-section[data-section="sops"]  { background: #c45a4a; }
 .nav-section[data-section="tools"] { background: #286983; }
-.nav-section[data-section="vend"]  { background: #6a9e72; }
+.nav-section[data-section="vend"]     { background: #6a9e72; }
+.nav-section[data-section="barrels"]  { background: #8a6540; }  /* warm oak/whiskey brown */
+.nav-section[data-section="supplies"] { background: #8a5070; }  /* dusty mauve */
 
 /* Label and links transparent — they sit on top of section background */
 .nav-section-label { background: transparent !important; }
