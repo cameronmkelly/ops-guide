@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP: Confined Space Entry Program — [Company Name] Operations Guide</title>
+<link rel="stylesheet" href="../style.css">
+<script>document.documentElement.classList.add('nav-loading');</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ── Nav state persistence ──
+  var NAV_STATE_KEY = 'ops-guide-nav-state';
+  function saveNavState() {
+    var state = {};
+    document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+      state['s:' + s.getAttribute('data-section')] = !s.classList.contains('collapsed');
+    });
+    document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+      state['f:' + i] = !f.classList.contains('collapsed');
+    });
+    localStorage.setItem(NAV_STATE_KEY, JSON.stringify(state));
+  }
+  function restoreNavState() {
+    try {
+      var state = JSON.parse(localStorage.getItem(NAV_STATE_KEY));
+      if (!state) return;
+      document.querySelectorAll('.nav-section[data-section]').forEach(function(s) {
+        var key = 's:' + s.getAttribute('data-section');
+        if (key in state) s.classList.toggle('collapsed', !state[key]);
+      });
+      document.querySelectorAll('.nav-folder').forEach(function(f, i) {
+        var key = 'f:' + i;
+        if (key in state) f.classList.toggle('collapsed', !state[key]);
+      });
+    } catch(e) {}
+  }
+
+  // ── Section collapse ──
+  document.querySelectorAll('.nav-section-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+      saveNavState();
+    });
+  });
+
+  // ── Folder collapse ──
+  document.querySelectorAll('.nav-folder-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+      saveNavState();
+    });
+  });
+
+  restoreNavState();
+  document.documentElement.classList.remove('nav-loading');
+
+  // ── Favorites ──
+  var FAVS_KEY = 'ops-guide-favorites';
+
+  function getFavs() {
+    try { return JSON.parse(localStorage.getItem(FAVS_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function saveFavs(favs) {
+    localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+  }
+
+  function renderFavs() {
+    var favs = getFavs();
+    var list = document.getElementById('favoritesList');
+    var section = document.getElementById('favoritesSection');
+    if (!list) return;
+    list.innerHTML = '';
+    if (favs.length === 0) {
+      list.innerHTML = '<div class="nav-favorites-empty">Pin pages using the ★ on any page</div>';
+      if (section) section.classList.add('collapsed');
+      return;
+    }
+    if (section) section.classList.remove('collapsed');
+    favs.forEach(function(fav) {
+      var row = document.createElement('div');
+      row.className = 'nav-fav-item';
+      var rp=document.getElementById('sidebar').getAttribute('data-root')||'';row.innerHTML = '<a href="' + rp + fav.url + '">' + fav.title + '</a>' +
+        '<button class="nav-fav-remove" data-url="' + fav.url + '" title="Remove">✕</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.nav-fav-remove').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var url = this.getAttribute('data-url');
+        var favs = getFavs().filter(function(f) { return f.url !== url; });
+        saveFavs(favs);
+        renderFavs();
+        updateFavBtn();
+      });
+    });
+  }
+
+  function updateFavBtn() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var favs = getFavs();
+    var isFav = favs.some(function(f) { return f.url === btn.getAttribute('data-url'); });
+    btn.classList.toggle('fav-active', isFav);
+    btn.querySelector('.fav-star').textContent = isFav ? '★' : '☆';
+    btn.querySelector('.fav-label').textContent = isFav ? 'Pinned' : 'Pin';
+  }
+
+  function toggleFav() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    var favs = getFavs();
+    var url = btn.getAttribute('data-url');
+    var title = btn.getAttribute('data-title');
+    var idx = favs.findIndex(function(f) { return f.url === url; });
+    if (idx >= 0) {
+      favs.splice(idx, 1);
+    } else {
+      favs.push({ url: url, title: title });
+    }
+    saveFavs(favs);
+    renderFavs();
+    updateFavBtn();
+  }
+
+  var favBtn = document.getElementById('favBtn');
+  if (favBtn) favBtn.addEventListener('click', toggleFav);
+
+  renderFavs();
+  updateFavBtn();
+});
+</script>
+</head>
+<body>
+
+<div class="mobile-header">
+  <span class="mobile-header-title">Operations Guide</span>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+</div>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
+<nav class="sidebar" id="sidebar" data-root="../"><div class="sidebar-header"><a href="../index.html" style="text-decoration:none"><div class="sidebar-logo">Operations Guide</div><div class="sidebar-title">[Company Name]</div><div class="sidebar-version">Template v1.0</div></a><button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">&#9776;</button></div><div id="sidebar-nav"><div class="nav-section nav-favorites collapsed" id="favoritesSection"><div class="nav-section-label">&#9733; Favorites</div><div class="nav-section-links" id="favoritesList"><div class="nav-favorites-empty">Pin pages using the &#9733; on any page</div></div></div><div class="nav-section collapsed" data-section="admin"><div class="nav-section-label">Administrative</div><div class="nav-section-links"><a href="../administrative/index.html" class="nav-link">Administrative Index</a>
+<a href="../administrative/product-receiving.html" class="nav-sub">Product &amp; Material Receiving</a>
+</div></div><div class="nav-section collapsed" data-section="barrels"><div class="nav-section-label">Barrels</div><div class="nav-section-links"><a href="../barrels/index.html" class="nav-link">Barrel Index</a>
+<a href="../barrels/intake.html" class="nav-sub">Barrel Intake &amp; Receiving</a>
+<a href="../barrels/logistics.html" class="nav-sub">Barrel Logistics &amp; Transport</a>
+</div></div><div class="nav-section collapsed" data-section="chem"><div class="nav-section-label">Chemicals &amp; SDS</div><div class="nav-section-links"><a href="../chemicals/index.html" class="nav-link">Chemical Index</a>
+<a href="../chemicals/alkaline-detergent.html" class="nav-sub">Alkaline Detergent</a>
+<a href="../chemicals/citric-acid.html" class="nav-sub">Citric Acid</a>
+<a href="../chemicals/sanitizer.html" class="nav-sub">No-Rinse Sanitizer</a>
+</div></div><div class="nav-section collapsed" data-section="equip"><div class="nav-section-label">Equipment</div><div class="nav-section-links"><a href="../equipment/index.html" class="nav-link">Equipment Index</a>
+<div class="nav-folder collapsed"><div class="nav-folder-label">Lab &amp; Bottling</div><div class="nav-folder-links"><a href="../equipment/lab-bottling/alcohol-meter.html" class="nav-sub">Digital Alcohol Meter</a>
+<a href="../equipment/lab-bottling/bottle-filler.html" class="nav-sub">Manual Bottle Filler</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Material Handling</div><div class="nav-folder-links"><a href="../equipment/material-handling/forklift.html" class="nav-sub">Electric Forklift</a>
+<a href="../equipment/material-handling/pallet-jack.html" class="nav-sub">Pallet Jack</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Processing</div><div class="nav-folder-links"><a href="../equipment/processing/pump-01.html" class="nav-sub">Pump-01: AODD (1&quot;)</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Utilities</div><div class="nav-folder-links"><a href="../equipment/utilities/city-water.html" class="nav-sub">City Water</a>
+<a href="../equipment/utilities/compressed-air.html" class="nav-sub">Compressed Air System</a>
+<a href="../equipment/utilities/generator.html" class="nav-sub">Emergency Generator</a>
+<a href="../equipment/utilities/hvac.html" class="nav-sub">HVAC System</a>
+<a href="../equipment/utilities/exhaust.html" class="nav-sub">Exhaust &amp; Ventilation</a>
+<a href="../equipment/utilities/hot-water.html" class="nav-sub">Hot Water System</a>
+<a href="../equipment/utilities/filtered-water.html" class="nav-sub">Filtered Water System</a>
+</div></div><div class="nav-folder collapsed"><div class="nav-folder-label">Vessels</div><div class="nav-folder-links"><a href="../equipment/vessels/ibc-tote.html" class="nav-sub">IBC Tote (Generic)</a>
+<a href="../equipment/vessels/ibc-350-001.html" class="nav-sub">IBC-350-001</a>
+<a href="../equipment/vessels/ibc-350-002.html" class="nav-sub">IBC-350-002</a>
+<a href="../equipment/vessels/ibc-550-001.html" class="nav-sub">IBC-550-001</a>
+<a href="../equipment/vessels/processing-tank.html" class="nav-sub">Processing Tank (Generic)</a>
+<a href="../equipment/vessels/pt-01.html" class="nav-sub">PT-01: 2,000 Gal</a>
+<a href="../equipment/vessels/pt-02.html" class="nav-sub">PT-02: 3,500 Gal</a>
+<a href="../equipment/vessels/tank-100l-001.html" class="nav-sub">100L Mobile Tank</a>
+<a href="../equipment/vessels/tank-30l-001.html" class="nav-sub">30L Mobile Tank</a>
+</div></div></div></div><div class="nav-section" data-section="sops"><div class="nav-section-label">SOPs</div><div class="nav-section-links"><a href="../sops/index.html" class="nav-link">SOP Index</a>
+<a href="../sops/barrel-disgorging.html" class="nav-sub">SOP: Barrel Disgorging</a>
+<a href="../sops/bottle-filling.html" class="nav-sub">SOP: Bottling Line</a>
+<a href="../sops/cip-processing-tanks.html" class="nav-sub">SOP: Processing Tank CIP</a>
+<a href="../sops/proofing.html" class="nav-sub">SOP: Proofing Operations</a>
+<a href="../sops/confined-space-entry.html" class="nav-sub active">SOP: Confined Space Entry</a>
+</div></div><div class="nav-section collapsed" data-section="supplies"><div class="nav-section-label">Supplies</div><div class="nav-section-links"><a href="../supplies/index.html" class="nav-link">Supplies Index</a>
+<a href="../supplies/barrel-closures.html" class="nav-sub">Barrel Closure Supplies</a>
+<a href="../supplies/filter-cartridges.html" class="nav-sub">Filter Cartridges</a>
+<a href="../supplies/cleaning-consumables.html" class="nav-sub">Cleaning Consumables</a>
+</div></div><div class="nav-section collapsed" data-section="tools"><div class="nav-section-label">Tools &amp; Concepts</div><div class="nav-section-links"><a href="../tools/index.html" class="nav-link">Tools &amp; Concepts Index</a>
+<a href="../tools/chemical-dilution.html" class="nav-sub">Facility Calculators</a>
+<a href="../tools/proofing-concepts.html" class="nav-sub">Proofing Concepts</a>
+</div></div><div class="nav-section collapsed" data-section="vend"><div class="nav-section-label">Vendors</div><div class="nav-section-links"><a href="../vendors/index.html" class="nav-link">Vendor Index</a>
+<a href="../vendors/chemical-supplier.html" class="nav-sub">[Chemical Supplier]</a>
+<a href="../vendors/equipment-fabricator.html" class="nav-sub">[Equipment Fabricator]</a>
+<a href="../vendors/forklift-service.html" class="nav-sub">[Forklift Service Vendor]</a>
+<a href="../vendors/maintenance-service.html" class="nav-sub">[Maintenance &amp; Service Vendor]</a>
+</div></div></div></nav>
+
+<div class="main">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="../index.html">Home</a> / <a href="index.html">SOPs</a> / Confined Space Entry</div>
+    <h1 class="page-title">SOP: Confined Space Entry Program<button class="fav-btn" id="favBtn" data-title="SOP: Confined Space Entry Program" data-url="sops/confined-space-entry.html"><span class="fav-star">☆</span><span class="fav-label">Pin</span></button></h1>
+    <p class="page-subtitle">Tiered permit-required confined space entry procedures for facility processing tanks, IBC totes, and the emergency generator enclosure.</p>
+  </div>
+
+  <div class="page-content">
+
+    <p><strong>Purpose:</strong> Establish a safe, compliant, and operationally practical program for identifying, evaluating, and controlling entry into permit-required confined spaces (PRCS) at this facility. This SOP establishes a three-tier entry model scaled to the realities of a small-batch craft distillery and satisfies the requirements of <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146" target="_blank">29&nbsp;CFR&nbsp;1910.146</a> and <a href="https://osha.oregon.gov/OSHARules/adopted/2014/ao5-2014-div2J-appendices.pdf" target="_blank">Oregon OSHA OAR&nbsp;437-002-0146</a>.</p>
+
+    <p><strong>Scope:</strong> Applies to all employees and contractors performing or supporting any entry into a facility-classified confined space, including the four stainless steel processing tanks (PT01&ndash;PT04), all facility-operated IBC totes, and the emergency generator enclosure.</p>
+
+    <p><strong>Operational Model:</strong> This facility typically operates with one or two people on-site. Any confined space entry requires a minimum of two people: the authorized entrant and a dedicated attendant. No employee may enter a confined space alone under any circumstances.</p>
+
+    <h2>&#9888;&#65039; Key Safety Rules</h2>
+
+    <div class="callout callout-warning">
+      <div class="callout-label">Never Enter Alone</div>
+      A dedicated attendant must be present outside the space for the entire duration of any entry. The attendant may not leave the post for any reason while an entrant is inside.
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-label">Avoid Entry When Possible</div>
+      If a task can be accomplished without breaking the plane of the opening &mdash; by using a mirror, camera, long-handled tool, or by repositioning the vessel &mdash; that method must be used instead of entry.
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-label">OSHA Definition of Entry</div>
+      Any part of the body breaking the plane of the confined space opening constitutes entry, including arm-reach sampling. All PRCS requirements apply from the moment of entry.
+    </div>
+
+    <h2>Hazard Overview</h2>
+
+    <table class="dosing-table">
+      <thead>
+        <tr>
+          <th>Hazard</th>
+          <th>Applies To</th>
+          <th>Threshold / Standard</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Flammable atmosphere</strong> &mdash; ethanol vapor</td>
+          <td>PT01&ndash;PT04, IBCs</td>
+          <td>&lt;10% LEL required for entry <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146" target="_blank">[1910.146(b)]</a></td>
+          <td>CIP Tier 1 &mdash; Hot Water Flush eliminates active vapor before entry</td>
+        </tr>
+        <tr>
+          <td><strong>Oxygen deficiency</strong></td>
+          <td>All spaces</td>
+          <td>19.5%&ndash;23.5% O&#8322; required <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146" target="_blank">[1910.146(b)]</a></td>
+          <td>No active fermentation on-site; risk is low but monitoring required for Tier 3</td>
+        </tr>
+        <tr>
+          <td><strong>Engulfment</strong> &mdash; residual liquid</td>
+          <td>PT01&ndash;PT04, IBCs</td>
+          <td>Zero liquid before entry</td>
+          <td>Tank must be fully drained and flushed per CIP Tier 1 before any entry</td>
+        </tr>
+        <tr>
+          <td><strong>Entanglement</strong> &mdash; agitator shaft / impeller</td>
+          <td>PT01&ndash;PT04 only</td>
+          <td>LOTO required at external motor disconnect</td>
+          <td>Motor is mounted externally; shaft and impeller are inside tank. LOTO applied at external disconnect before entry</td>
+        </tr>
+        <tr>
+          <td><strong>Carbon monoxide (CO)</strong></td>
+          <td>Emergency generator enclosure only</td>
+          <td>IDLH: 1,200 ppm; PEL: 50 ppm</td>
+          <td>Generator must be shut down and LOTO applied before entry</td>
+        </tr>
+        <tr>
+          <td><strong>Restricted egress</strong></td>
+          <td>PT01&ndash;PT04</td>
+          <td>&mdash;</td>
+          <td>No internal ladder; bottom manway only usable egress (top manway not accessible from inside). Retrieval system required for Tier 3</td>
+        </tr>
+        <tr>
+          <td><strong>Thermal &mdash; hot water vapor</strong></td>
+          <td>PT01&ndash;PT04, IBCs</td>
+          <td>CIP uses hot water up to 165&deg;F</td>
+          <td>Allow adequate cooldown time after CIP before entry. Confirm no steam or vapor visible before entry</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Confined Space Inventory</h2>
+
+    <table class="dosing-table">
+      <thead>
+        <tr>
+          <th>Asset ID</th>
+          <th>Description</th>
+          <th>Classification</th>
+          <th>Entry Tier</th>
+          <th>LOTO Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>PT01</td>
+          <td><a href="../equipment/vessels/processing-tank.html" class="wikilink">2,000 Gal Processing Tank</a></td>
+          <td>Permit-Required CS</td>
+          <td>Tier 1 (facility) / Tier 3 (contractor)</td>
+          <td>Yes &mdash; agitator motor disconnect</td>
+        </tr>
+        <tr>
+          <td>PT02</td>
+          <td><a href="../equipment/vessels/processing-tank.html" class="wikilink">2,000 Gal Processing Tank</a></td>
+          <td>Permit-Required CS</td>
+          <td>Tier 1 (facility) / Tier 3 (contractor)</td>
+          <td>Yes &mdash; agitator motor disconnect</td>
+        </tr>
+        <tr>
+          <td>PT03</td>
+          <td><a href="../equipment/vessels/processing-tank.html" class="wikilink">3,500 Gal Processing Tank</a></td>
+          <td>Permit-Required CS</td>
+          <td>Tier 1 (facility) / Tier 3 (contractor)</td>
+          <td>Yes &mdash; agitator motor disconnect</td>
+        </tr>
+        <tr>
+          <td>PT04</td>
+          <td><a href="../equipment/vessels/processing-tank.html" class="wikilink">3,500 Gal Processing Tank</a></td>
+          <td>Permit-Required CS</td>
+          <td>Tier 1 (facility) / Tier 3 (contractor)</td>
+          <td>Yes &mdash; agitator motor disconnect</td>
+        </tr>
+        <tr>
+          <td>IBC-01 through IBC-15</td>
+          <td><a href="../equipment/vessels/ibc-tote.html" class="wikilink">275 Gal IBC Tote</a></td>
+          <td>Permit-Required CS</td>
+          <td>Tier 2 (facility) / Tier 3 (contractor)</td>
+          <td>No permanent power; disconnect flexible hoses only</td>
+        </tr>
+        <tr>
+          <td>GEN-01</td>
+          <td><a href="../equipment/utilities/generator.html" class="wikilink">Emergency Generator Enclosure</a></td>
+          <td>Permit-Required CS</td>
+          <td>Tier 3 (contractor only)</td>
+          <td>Yes &mdash; main disconnect + auto-start disable</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Entry Decision</h2>
+
+    <p>Select the appropriate tier before any entry. When in doubt, escalate to the next tier. Facility employees may perform Tier 1 and Tier 2 entries. <strong>Tier 3 entries are contractor-only</strong> &mdash; Employees do not enter under Tier 3 conditions.</p>
+
+    <div class="decision-tree">
+      <div class="tier tier-1">
+        <span class="tier-label">Tier 1</span>
+        <div class="tier-text">
+          <span class="tier-trigger">Employee Manway Inspection</span>
+          Post-CIP visual inspection of processing tank (PT01&ndash;PT04) interiors. Head and shoulders may enter bottom manway for sensory assessment. No tools, no sustained work inside. Minimum team: 1 employee (entrant) + 1 attendant.
+        </div>
+      </div>
+      <div class="tier tier-2">
+        <span class="tier-label">Tier 2</span>
+        <div class="tier-text">
+          <span class="tier-trigger">Employee Limited IBC Access</span>
+          Limited access to any facility-operated IBC tote to retrieve an object that cannot be reached from outside after repositioning. Minimum team: 1 employee (entrant) + 1 attendant.
+        </div>
+      </div>
+      <div class="tier tier-3">
+        <span class="tier-label">Tier 3</span>
+        <div class="tier-text">
+          <span class="tier-trigger">Contractor Full PRCS Entry</span>
+          Any entry beyond Tier 1 or Tier 2 scope &mdash; welding, inspection, repair, or maintenance inside any facility vessel or the generator enclosure. Contractor issues their own Entry Permit. Facility acts as host employer and issues the Hazard Acknowledgment form.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TIER 1 ═══════════ -->
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-number">TIER 1</span>
+        <span class="phase-title">Employee Manway Inspection &mdash; Processing Tanks (PT01&ndash;PT04)</span>
+      </div>
+      <div class="phase-body">
+
+        <p><strong>Scope:</strong> Post-CIP visual and sensory assessment. The entrant may insert their head and shoulders through the bottom manway to inspect interior surfaces. No sustained work inside the tank.</p>
+
+        <h3>Prerequisites &mdash; All Must Be Confirmed</h3>
+        <ul class="checklist">
+          <li><a href="../sops/cip-processing-tanks.html" class="wikilink">CIP Tier 1 &mdash; Hot Water Flush</a> completed. Tank fully drained.</li>
+          <li>All CIP flexible hoses (cold water, hot water, RO water, compressed air) disconnected and removed from the vessel.</li>
+          <li>Agitator LOTO applied at external motor disconnect and verified (zero-energy state confirmed).</li>
+          <li>No visible vapor, no ethanol odor at the manway opening, no visible liquid inside.</li>
+          <li>Building LEL monitor not in alarm.</li>
+          <li>Attendant in position outside the space. Verbal brief given and logged.</li>
+        </ul>
+
+        <div class="callout callout-note">
+          <div class="callout-label">No 4-Gas Meter Required for Tier 1</div>
+          Because this facility does not conduct active fermentation, there is no CO or CO&#8322; source inside processing tanks after a hot water flush. Sensory assessment (no visible vapor, no sharp ethanol odor) is the acceptable pre-entry check for Tier 1 and Tier 2. If any doubt exists, ventilate and wait, or escalate to Tier 3.
+        </div>
+
+        <h3>Procedure</h3>
+        <ol>
+          <li><strong>Log the entry.</strong> Record date, time, asset ID, purpose, entrant initials, and attendant name in the <a href="#records">Confined Space Entry Log</a> before entry begins.</li>
+          <li><strong>Position attendant.</strong> Attendant takes position at the manway with a clear line of sight. Communication plan confirmed (voice contact throughout).</li>
+          <li><strong>Open manway.</strong> Slowly open the bottom manway. Pause and assess: no odor, no visible vapor, no heat from the opening.</li>
+          <li><strong>Insert head and shoulders only.</strong> Using a flashlight, inspect all interior surfaces, spray ball, and agitator shaft for residue, damage, or foreign material. Do not proceed further into the tank.</li>
+          <li><strong>Exit and close.</strong> Remove from the manway, close and torque the manway cover, log findings in the Entry Log.</li>
+          <li><strong>Remove LOTO.</strong> After the manway is secured and entrant is fully clear, release the agitator LOTO per the <a href="../sops/lockout-tagout.html" class="wikilink">LOTO SOP</a>.</li>
+        </ol>
+
+        <div class="callout callout-warning">
+          <div class="callout-label">Abort Conditions &mdash; Exit Immediately If:</div>
+          <ul style="margin:0;padding-left:1.2em;">
+            <li>Attendant signals to exit</li>
+            <li>Any odor, heat, or unusual condition detected inside</li>
+            <li>Building LEL alarm activates</li>
+            <li>Any entrant feels lightheaded, short of breath, or unusual</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ TIER 2 ═══════════ -->
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-number">TIER 2</span>
+        <span class="phase-title">Employee Limited IBC Access</span>
+      </div>
+      <div class="phase-body">
+
+        <p><strong>Scope:</strong> Limited torso-and-arm access into any facility-operated IBC tote to retrieve an object that cannot be reached from outside after repositioning the tote. Applies to all current and future facility-operated IBCs.</p>
+
+        <div class="callout callout-note">
+          <div class="callout-label">Reposition First</div>
+          Before any Tier 2 entry, attempt to reposition or tilt the IBC to retrieve the object without entry. Entry is only permitted if repositioning is not feasible.
+        </div>
+
+        <h3>Prerequisites &mdash; All Must Be Confirmed</h3>
+        <ul class="checklist">
+          <li>All Tier 1 prerequisites confirmed (sensory assessment, no vapor, no odor, no visible liquid).</li>
+          <li>All CIP flexible hoses and the dip tube assembly disconnected and removed from the IBC.</li>
+          <li>IBC fully drained. No liquid visible inside.</li>
+          <li>Building LEL monitor not in alarm.</li>
+          <li>Attendant in position outside the space. Verbal brief given and logged.</li>
+        </ul>
+
+        <h3>Procedure</h3>
+        <ol>
+          <li><strong>Log the entry.</strong> Record in the Confined Space Entry Log. Note that LOTO is N/A (IBCs have no permanent power).</li>
+          <li><strong>Position attendant.</strong> Attendant takes position at the IBC opening with a clear line of sight and continuous verbal contact.</li>
+          <li><strong>Open IBC lid.</strong> Open the top lid. Pause and assess: no odor, no heat, no vapor.</li>
+          <li><strong>Limited entry.</strong> Entrant may lower head, shoulders, and arms into the IBC only as far as required to retrieve the object. Duration must be the minimum necessary.</li>
+          <li><strong>Exit and secure.</strong> Exit the IBC, secure the lid, log findings and duration in the Entry Log.</li>
+        </ol>
+
+        <div class="callout callout-warning">
+          <div class="callout-label">Abort Conditions &mdash; Same as Tier 1</div>
+          Exit immediately if the attendant signals, any unusual condition is detected, or the entrant experiences any physical symptom.
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ TIER 3 ═══════════ -->
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-number">TIER 3</span>
+        <span class="phase-title">Contractor Full PRCS Entry</span>
+      </div>
+      <div class="phase-body">
+
+        <p><strong>Scope:</strong> Any entry beyond Tier 1 or Tier 2 scope, including welding, inspection, repair, or any maintenance task requiring sustained work inside a confined space. Applies to all facility confined spaces including the emergency generator enclosure. Employees do not enter under Tier 3 conditions.</p>
+
+        <h3>Before Contractor Arrival &mdash; Facility Responsibilities</h3>
+        <ol>
+          <li><strong>Issue Hazard Acknowledgment.</strong> Provide the contractor with the completed <a href="#records">Confined Space Hazard Acknowledgment</a> form covering all hazards applicable to the entry.</li>
+          <li><strong>Coordinate LOTO.</strong> Perform facility-side energy isolation (tank drain, CIP Tier 1 flush, agitator LOTO or generator LOTO) before contractor arrival, per the <a href="../sops/lockout-tagout.html" class="wikilink">LOTO SOP</a>.</li>
+          <li><strong>Confirm contractor program.</strong> Verify the contractor has their own written PRCS program, trained personnel, atmospheric testing equipment, rescue provisions, and Entry Permit authority.</li>
+        </ol>
+
+        <h3>Day of Entry &mdash; Host Employer Obligations</h3>
+        <ol>
+          <li>Brief the contractor&rsquo;s Entry Supervisor on all hazards in the space, including any conditions that may have changed since the Hazard Acknowledgment was issued.</li>
+          <li>Inform the contractor of any facility LOTO devices already applied and coordinate dual-lock procedures where applicable.</li>
+          <li>Maintain open communication with the contractor throughout the entry.</li>
+          <li>Debrief with the contractor Entry Supervisor upon completion. Note any new or unexpected hazards discovered.</li>
+          <li><strong>Retain a copy</strong> of the contractor&rsquo;s completed Entry Permit for a minimum of one year.</li>
+        </ol>
+
+        <div class="callout callout-note">
+          <div class="callout-label">Who Issues the Entry Permit for Tier 3?</div>
+          The contractor&rsquo;s Entry Supervisor issues the Entry Permit under the contractor&rsquo;s own program, per <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146" target="_blank">29&nbsp;CFR&nbsp;1910.146(c)(9)(iv)</a>. The facility issues the Hazard Acknowledgment form (the host employer document) and retains a copy of the contractor&rsquo;s permit. The facility Entry Permit template may be provided to contractors who do not have their own form.
+        </div>
+
+      </div>
+    </div>
+
+    <h2>Required Roles &mdash; All Entries</h2>
+
+    <table class="spec-table">
+      <thead><tr><th>Role</th><th>Who Fills It</th><th>Key Duties</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Entry Supervisor</strong></td>
+          <td>Operations Manager (Tier 1/2); Contractor Entry Supervisor (Tier 3)</td>
+          <td>Verify prerequisites met; authorize entry; cancel permit if conditions change; conduct post-entry debrief</td>
+        </tr>
+        <tr>
+          <td><strong>Attendant</strong></td>
+          <td>Any trained employee or qualified contractor attendant</td>
+          <td>Maintain continuous contact with entrant; monitor for hazards; summon rescue if needed; never leave post while entrant is inside</td>
+        </tr>
+        <tr>
+          <td><strong>Authorized Entrant</strong></td>
+          <td>Any trained employee (Tier 1/2); contractor entrant (Tier 3)</td>
+          <td>Know the hazards; use required PPE; maintain communication with attendant; exit immediately when ordered</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Permit Duration and Cancellation</h2>
+    <p>Entry permits are valid for a single calendar day (midnight) only. A new permit (or new Entry Log entry for Tier 1/2) is required for each separate entry event. Permits must be cancelled &mdash; and all entrants accounted for &mdash; before the entry is considered closed. Cancelled permits are retained for one year minimum.</p>
+
+    <div class="callout callout-warning">
+      <div class="callout-label">Immediate Cancellation Required If:</div>
+      <ul style="margin:0;padding-left:1.2em;">
+        <li>Conditions change such that new hazards arise or existing hazards worsen</li>
+        <li>An entrant shows signs of distress</li>
+        <li>A fire alarm or facility emergency is declared</li>
+        <li>Communication with the entrant is lost</li>
+      </ul>
+    </div>
+
+    <h2>Atmospheric Testing Reference</h2>
+    <p>Atmospheric testing for Tier 3 entries must be performed by a competent person using a calibrated multi-gas detector before entry and at regular intervals during entry. Acceptable entry conditions per <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146" target="_blank">29&nbsp;CFR&nbsp;1910.146(b)</a>:</p>
+
+    <table class="spec-table">
+      <thead><tr><th>Parameter</th><th>Acceptable Range</th><th>Action if Out of Range</th></tr></thead>
+      <tbody>
+        <tr><td>Oxygen (O&#8322;)</td><td>19.5%&ndash;23.5%</td><td>Ventilate; do not enter until stable</td></tr>
+        <tr><td>Flammable gas / vapor (LEL)</td><td>&lt;10% LEL</td><td>Ventilate; do not enter until stable</td></tr>
+        <tr><td>Carbon monoxide (CO)</td><td>&lt;35 ppm</td><td>Ventilate; identify source; do not enter</td></tr>
+        <tr><td>Hydrogen sulfide (H&#8322;S)</td><td>&lt;1 ppm</td><td>Evacuate area; do not enter</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-note">
+      <div class="callout-label">Facility Does Not Own a 4-Gas Meter</div>
+      The facility does not currently own atmospheric testing equipment. For Tier 1 and Tier 2, sensory assessment is used (no vapor, no odor, building LEL not in alarm). For Tier 3, the contractor is required to provide calibrated atmospheric testing equipment as part of their PRCS program. In situations where atmospheric testing by the facility is warranted (e.g., post-incident, uncertain conditions), a 4-gas monitor may be rented from a local safety supplier.
+    </div>
+
+    <h2 id="records">Records</h2>
+    <ul>
+      <li><strong>Confined Space Entry Log</strong> &mdash; All Tier 1 and Tier 2 entries are logged here. Stored in the operations records. This log also serves as the simplified permit record for Tier 1/2 entries.</li>
+      <li><strong>Confined Space Hazard Acknowledgment</strong> &mdash; Completed and signed before each Tier 3 entry. Retained with the corresponding Entry Permit copy for one year minimum.</li>
+      <li><strong>Confined Space Entry Permit</strong> &mdash; Template available for Tier 3 entries. Contractor&rsquo;s own permit is acceptable; a copy must be retained by the facility.</li>
+      <li><strong>Annual review.</strong> This SOP and the confined space inventory must be reviewed at least annually and updated whenever physical changes are made to the facility or equipment.</li>
+    </ul>
+
+    <h2>Regulatory References</h2>
+    <table class="spec-table">
+      <thead><tr><th>Standard</th><th>Subject</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146" target="_blank">29 CFR 1910.146</a></td><td>Permit-Required Confined Spaces (federal OSHA)</td></tr>
+        <tr><td><a href="https://osha.oregon.gov/OSHARules/adopted/2014/ao5-2014-div2J-appendices.pdf" target="_blank">OAR 437-002-0146</a></td><td>Oregon OSHA Confined Space rule (Division 2/J)</td></tr>
+        <tr><td><a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147" target="_blank">29 CFR 1910.147</a></td><td>Control of Hazardous Energy (LOTO)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="related-docs">
+      <h2>Related Documentation</h2>
+      <div class="related-grid">
+        <a href="../sops/cip-processing-tanks.html" class="related-card">
+          <div class="related-card-type">SOP</div>
+          <div class="related-card-title">Processing Tank CIP</div>
+        </a>
+        <a href="../sops/lockout-tagout.html" class="related-card">
+          <div class="related-card-type">SOP</div>
+          <div class="related-card-title">Lockout / Tagout Program</div>
+        </a>
+        <a href="../equipment/vessels/processing-tank.html" class="related-card">
+          <div class="related-card-type">Equipment</div>
+          <div class="related-card-title">Processing Tank</div>
+        </a>
+        <a href="../equipment/vessels/ibc-tote.html" class="related-card">
+          <div class="related-card-type">Equipment</div>
+          <div class="related-card-title">IBC Tote</div>
+        </a>
+        <a href="../equipment/utilities/generator.html" class="related-card">
+          <div class="related-card-type">Equipment</div>
+          <div class="related-card-title">Emergency Generator</div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+</script>
+<script>
+  // ── Sidebar state management ──
+  (function() {
+    var sb = document.getElementById('sidebar');
+    var mn = document.querySelector('.main');
+    if (!sb || !mn) return;
+
+    function isCollapsed() { return localStorage.getItem('sidebarCollapsed') === '1'; }
+
+    function applyState(collapsed) {
+      if (collapsed) {
+        sb.classList.add('sidebar-collapsed');
+        mn.classList.add('sidebar-collapsed');
+      } else {
+        sb.classList.remove('sidebar-collapsed');
+        mn.classList.remove('sidebar-collapsed');
+      }
+    }
+
+    function toggle() {
+      var nowCollapsed = !sb.classList.contains('sidebar-collapsed');
+      applyState(nowCollapsed);
+      localStorage.setItem('sidebarCollapsed', nowCollapsed ? '1' : '0');
+    }
+
+    sb.style.transition = 'none'; mn.style.transition = 'none';
+    if (window.innerWidth > 768) { applyState(isCollapsed()); }
+    requestAnimationFrame(function() { requestAnimationFrame(function() { sb.style.transition = ''; mn.style.transition = ''; }); });
+
+    var tog = document.getElementById('sidebarToggle');
+    if (tog) tog.addEventListener('click', toggle);
+
+    var mobileBtn = document.getElementById('mobileMenuBtn');
+    var overlay = document.getElementById('mobileOverlay');
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', function() {
+        sb.classList.toggle('mobile-open');
+        if (overlay) overlay.classList.toggle('active');
+      });
+    }
+    if (overlay) overlay.addEventListener('click', function() {
+      sb.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+    });
+    if (sb) sb.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        sb.classList.remove('mobile-open');
+        if (overlay) overlay.classList.remove('active');
+      });
+    });
+  })();
+</script>
+</body>
+</html>
